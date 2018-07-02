@@ -2,8 +2,8 @@
 
 Automate Let's Encrypt certificate issuance, renewal and synchronize with CleverCloud
 
-![Logo](src/main/resources/public/img/letsAutomate.png?raw=true "Logo")
-
+<img src="https://raw.githubusercontent.com/MAIF/lets-automate/master/src/main/resources/public/img/letsAutomate.png?token=ABgKYW3Y2Gn5vNsGYGSAJjWaPA4ZTZSZks5bQ1bCwA%3D%3D" height="250">
+</img>
 
 ## Description
 
