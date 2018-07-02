@@ -24,44 +24,48 @@ the jar is located in the folder `build/libs/letsautomate-shadow.jar`
 
 ### Configuration 
 
-| System Property  | Env variable  | 
-| ---------------- | ------------- |
-| env | ENV |
-| http.port | HTTP_PORT |
-| http.host | HTTP_HOST |
-| logout | LOGOUT_URL |
-| certificates.pollingInterval.period | LETSENCRYPT_POLLING_PERIOD |
-| certificates.pollingInterval.unit | LETSENCRYPT_POLLING_UNIT |
-| ovh.applicationKey | OVH_APPLICATION_KEY |
-| ovh.applicationSecret | OVH_APPLICATION_SECRET |
-| ovh.consumerKey | OVH_CONSUMER_KEY |
-| ovh.host | OVH_HOST |
-| letsencrypt.server | LETSENCRYPT_SERVER |
-| letsencrypt.accountId | LETSENCRYPT_ACCOUNT_ID |
-| postgres.host | POSTGRESQL_ADDON_HOST |
-| postgres.port | POSTGRESQL_ADDON_PORT |
-| postgres.database | POSTGRESQL_ADDON_DB |
-| postgres.username | POSTGRESQL_ADDON_USER |
-| postgres.password | POSTGRESQL_ADDON_PASSWORD |
-| clevercloud.host | CLEVER_HOST |
-| clevercloud.consumerKey | CLEVER_CONSUMER_KEY |
-| clevercloud.consumerSecret | CLEVER_CONSUMER_SECRET |
-| clevercloud.clientToken | CLEVER_CLIENT_TOKEN |
-| clevercloud.clientSecret | CLEVER_CLIENT_SECRET |
-| otoroshi.headerRequestId | FILTER_REQUEST_ID_HEADER_NAME |
-| otoroshi.headerGatewayStateResp | FILTER_GATEWAY_STATE_RESP_HEADER_NAME |
-| otoroshi.headerGatewayState | FILTER_GATEWAY_STATE_HEADER_NAME |
-| otoroshi.headerClaim | FILTER_CLAIM_HEADER_NAME |
-| otoroshi.sharedKey | CLAIM_SHAREDKEY |
-| otoroshi.issuer | OTOROSHI_ISSUER |
-| slack.token | SLACK_TOKEN |
-| slack.channel | SLACK_CHANNEL |
-| slack.url | SLACK_URL |
+| System Property  | Env variable  | Default  
+| ---------------- | ------------- | ------------- |
+| env | ENV | dev |
+| http.port | HTTP_PORT | 8080 |
+| http.host | HTTP_HOST | 0.0.0.0 |
+| logout | LOGOUT_URL | |
+| certificates.pollingInterval.period | LETSENCRYPT_POLLING_PERIOD | 5 |
+| certificates.pollingInterval.unit | LETSENCRYPT_POLLING_UNIT | HOUR |
+| ovh.applicationKey | OVH_APPLICATION_KEY | |
+| ovh.applicationSecret | OVH_APPLICATION_SECRET | |
+| ovh.consumerKey | OVH_CONSUMER_KEY | | 
+| ovh.host | OVH_HOST | https://api.ovh.com |
+| letsencrypt.server | LETSENCRYPT_SERVER | acme://letsencrypt.org/staging | 
+| letsencrypt.accountId | LETSENCRYPT_ACCOUNT_ID | account | 
+| postgres.host | POSTGRESQL_ADDON_HOST | localhost |
+| postgres.port | POSTGRESQL_ADDON_PORT | 5432 |
+| postgres.database | POSTGRESQL_ADDON_DB | lets_automate | 
+| postgres.username | POSTGRESQL_ADDON_USER | default_user |
+| postgres.password | POSTGRESQL_ADDON_PASSWORD | password |
+| clevercloud.host | CLEVER_HOST | https://api.clever-cloud.com/ | 
+| clevercloud.consumerKey | CLEVER_CONSUMER_KEY | | 
+| clevercloud.consumerSecret | CLEVER_CONSUMER_SECRET | |
+| clevercloud.clientToken | CLEVER_CLIENT_TOKEN | |
+| clevercloud.clientSecret | CLEVER_CLIENT_SECRET | | 
+| otoroshi.headerRequestId | FILTER_REQUEST_ID_HEADER_NAME | |
+| otoroshi.headerGatewayStateResp | FILTER_GATEWAY_STATE_RESP_HEADER_NAME | |
+| otoroshi.headerGatewayState | FILTER_GATEWAY_STATE_HEADER_NAME | |
+| otoroshi.headerClaim | FILTER_CLAIM_HEADER_NAME | |
+| otoroshi.sharedKey | CLAIM_SHAREDKEY | |
+| otoroshi.issuer | OTOROSHI_ISSUER | |
+| slack.token | SLACK_TOKEN | |
+| slack.channel | SLACK_CHANNEL | |
+| slack.url | SLACK_URL | https://slack.com/api |
 
 ### Run the app 
 
-
-
+```
+java -jar letsautomate-shadow.jar \
+    -Denv=prod \
+    -Dhttp.port=8080 \
+    -Dhttp.host=0.0.0.0 \
+```
 
 ## Run in development
 
