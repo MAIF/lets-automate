@@ -1,0 +1,9 @@
+build
+*.iml
+.idea
+
+javascript/node_modules
+src/main/resources/public/js/bundle
+.gradle
+logs
+out
