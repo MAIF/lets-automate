@@ -2,6 +2,7 @@ package fr.maif.automate.certificate.views
 
 import arrow.core.None
 import arrow.core.Option
+import arrow.core.getOrElse
 import fr.maif.automate.certificate.write.CertificateEvent
 import fr.maif.automate.commons.eventsourcing.EventReader
 import fr.maif.automate.commons.eventsourcing.EventStore
@@ -14,7 +15,7 @@ import io.vertx.kotlin.core.json.obj
 class EventsView(private val eventStore: EventStore, private val eventReader: EventReader<CertificateEvent>) {
 
     fun events(domain: String, id: Option<Long> = None): Single<List<JsonObject>> {
-        return eventStore.loadEventsById(domain)
+        return eventStore.loadEventsById(domain, id.getOrElse { 0 })
                 .map { Triple(eventReader.read(it), it.eventType, it.sequence) }
                 .map { p ->
                     eventToJson(p)

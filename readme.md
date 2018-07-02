@@ -12,6 +12,11 @@ Automate Let's Encrypt certificate issuance, renewal and synchronize with Clever
 Let's automate allow you to create certificate and publish them to clever cloud with automatic renewal. 
 Let's automatic needs an ovh account in order to create DNS records for the let's encrypt DNS challenge. 
 
+## Disclamer 
+
+Let's automate is integrated with otoroshi (for the auth), ovh, clever cloud and slack. For the moment there is no other providers available. 
+If you need this tools with other DNS provider or hosting provider your contributions are welcomed! 
+
 ## Deploy the app 
 
 ### Build the app 
