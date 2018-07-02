@@ -1,0 +1,137 @@
+# Let's Automate
+
+Automate Let's Encrypt certificate issuance, renewal and synchronize with CleverCloud
+
+## Description
+
+Let's automate allow you to create certificate and publish them to clever cloud with automatic renewal. 
+Let's automatic needs an ovh account in order to create DNS records for the let's encrypt DNS challenge. 
+
+## Deploy the app 
+
+### Build the app 
+
+```
+git clone https://github.com/MAIF/lets-automate.git
+cd javascript 
+yarn install 
+yarn build 
+cd ..
+gradlew shadowJar 
+```
+
+the jar is located in the folder `build/libs/letsautomate-shadow.jar`
+
+### Configuration 
+
+| System Property  | Env variable  | 
+| ---------------- | ------------- |
+| env | ENV |
+| http.port | HTTP_PORT |
+| http.host | HTTP_HOST |
+| logout | LOGOUT_URL |
+| certificates.pollingInterval.period | LETSENCRYPT_POLLING_PERIOD |
+| certificates.pollingInterval.unit | LETSENCRYPT_POLLING_UNIT |
+| ovh.applicationKey | OVH_APPLICATION_KEY |
+| ovh.applicationSecret | OVH_APPLICATION_SECRET |
+| ovh.consumerKey | OVH_CONSUMER_KEY |
+| ovh.host | OVH_HOST |
+| letsencrypt.server | LETSENCRYPT_SERVER |
+| letsencrypt.accountId | LETSENCRYPT_ACCOUNT_ID |
+| postgres.host | POSTGRESQL_ADDON_HOST |
+| postgres.port | POSTGRESQL_ADDON_PORT |
+| postgres.database | POSTGRESQL_ADDON_DB |
+| postgres.username | POSTGRESQL_ADDON_USER |
+| postgres.password | POSTGRESQL_ADDON_PASSWORD |
+| clevercloud.host | CLEVER_HOST |
+| clevercloud.consumerKey | CLEVER_CONSUMER_KEY |
+| clevercloud.consumerSecret | CLEVER_CONSUMER_SECRET |
+| clevercloud.clientToken | CLEVER_CLIENT_TOKEN |
+| clevercloud.clientSecret | CLEVER_CLIENT_SECRET |
+| otoroshi.headerRequestId | FILTER_REQUEST_ID_HEADER_NAME |
+| otoroshi.headerGatewayStateResp | FILTER_GATEWAY_STATE_RESP_HEADER_NAME |
+| otoroshi.headerGatewayState | FILTER_GATEWAY_STATE_HEADER_NAME |
+| otoroshi.headerClaim | FILTER_CLAIM_HEADER_NAME |
+| otoroshi.sharedKey | CLAIM_SHAREDKEY |
+| otoroshi.issuer | OTOROSHI_ISSUER |
+| slack.token | SLACK_TOKEN |
+| slack.channel | SLACK_CHANNEL |
+| slack.url | SLACK_URL |
+
+### Run the app 
+
+
+
+
+## Run in development
+
+
+
+### Ovh Key 
+
+First you need to get a token to access ovh apis 
+
+```bash
+
+curl -XPOST -H "X-Ovh-Application: YOUR_APPLICATION_ID" -H "Content-type: application/json" \
+https://eu.api.ovh.com/1.0/auth/credential  -d '{
+    "accessRules": [
+        {
+            "method": "GET",
+            "path": "/*"
+        }, 
+        {
+            "method": "POST",
+            "path": "/*"
+        }, 
+        {
+            "method": "PUT",
+            "path": "/*"
+        },
+        {
+            "method": "DELETE",
+            "path": "/*"
+        }
+    ],
+    "redirection":"https://localhost:8080"
+}' --include
+
+HTTP/1.1 200 OK
+Date: Mon, 25 Jun 2018 08:57:43 GMT
+Server: Apache
+X-OVH-QUERYID: FR.ws-3.5b30ae87.26037.1707
+Cache-Control: no-cache
+Access-Control-Allow-Origin: *
+Transfer-Encoding: chunked
+Content-Type: application/json; charset=utf-8
+
+{"validationUrl":"https://eu.api.ovh.com/auth/?credentialToken=A_CREDENTIAL_TOKEN","consumerKey":"A_CONSUMER_KEY","state":"pendingValidation"}%
+```
+
+Then go to the validation url and log in. 
+
+Set the consumer key, your application id an,d secret in the configuration file. 
+
+### Run the app
+
+```bash
+docker-compose up 
+
+# Restaure Backup
+cat dump_28-06-2018_17_58_06.sql | docker exec -i your-db-container psql -U postgres
+
+./gradlew run -P env=dev
+
+```
+
+```bash
+cd javascript 
+yarn install 
+yarn start 
+``` 
+
+Do a backup : 
+```
+docker exec -t your-db-container pg_dumpall -c -U postgres > dump_`date+%d-%m-%Y"_"%H_%M_%S`.sql
+```
+ 
