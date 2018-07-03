@@ -1,6 +1,6 @@
 # Let's Automate
 
-Automate Let's Encrypt certificate issuance, renewal and synchronize with CleverCloud
+Automate Let's Encrypt certificate issuance, renewal and synchronize with CleverCloud.
 
 <p align="center">
     <img src="https://raw.githubusercontent.com/MAIF/lets-automate/master/src/main/resources/public/img/letsAutomate.png?token=ABgKYW3Y2Gn5vNsGYGSAJjWaPA4ZTZSZks5bQ1bCwA%3D%3D" height="250">
@@ -10,7 +10,7 @@ Automate Let's Encrypt certificate issuance, renewal and synchronize with Clever
 ## Description
 
 Let's automate allow you to create certificate and publish them to clever cloud with automatic renewal. 
-Let's automatic needs an ovh account in order to create DNS records for the let's encrypt DNS challenge. 
+Let's automate needs an ovh account in order to create DNS records to perform the let's encrypt DNS challenge. Let's automate is also integrated with slack so all the event are published to a dedicated topic.  
 
 ## Disclamer 
 
@@ -133,8 +133,37 @@ java -jar letsautomate-shadow.jar \
 
 ```
 
-## Run in development
+### Run the app with clever cloud
 
+First create a postgresql add on. 
+
+Then create a java app and set the following env variables : 
+
+```
+APP_ENV=prod
+CACHE_DEPENDENCIES=true
+CC_PRE_BUILD_HOOK=./clevercloud/hook.sh
+CLEVER_CLIENT_SECRET=xxxx
+CLEVER_CLIENT_TOKEN=xxxx
+CLEVER_CONSUMER_KEY=xxxx
+CLEVER_CONSUMER_SECRET=xxxx
+CLEVER_HOST=https://api.clever-cloud.com
+ENV=prod
+JAVA_VERSION=8
+LETSENCRYPT_ACCOUNT_ID=account
+LETSENCRYPT_POLLING_PERIOD=1
+LETSENCRYPT_POLLING_UNIT=HOURS
+LETSENCRYPT_SERVER=acme://letsencrypt.org
+OVH_APPLICATION_KEY=xxxx
+OVH_APPLICATION_SECRET=xxxx
+OVH_CONSUMER_KEY=xxxx
+OVH_HOST=https://api.ovh.com
+PORT=8080
+SLACK_CHANNEL=xxxx
+SLACK_TOKEN=xoxb-xxx
+```
+
+## Run in development
 
 ### Run the app
 
