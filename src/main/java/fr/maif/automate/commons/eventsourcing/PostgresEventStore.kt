@@ -106,6 +106,7 @@ class PostgresEventStore(private val table: String, private val offetsTable: Str
                         LOGGER.error("Error during commit -> rollback", e)
                         connection.rxRollback().subscribe()
                     }
+                    .flatMap { _ -> connection.rxSetAutoCommit(true).andThen(Single.just(Unit)) }
                     .doFinally { connection.rxClose().subscribe() }
         }
     }

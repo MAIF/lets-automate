@@ -37,6 +37,8 @@ the jar is located in the folder `build/libs/letsautomate-shadow.jar`
 
 First you need to get a token to access ovh apis 
 
+https://docs.ovh.com/gb/en/customer/first-steps-with-ovh-api/
+
 ```bash
 
 curl -XPOST -H "X-Ovh-Application: YOUR_APPLICATION_ID" -H "Content-type: application/json" \
@@ -168,11 +170,11 @@ SLACK_TOKEN=xoxb-xxx
 ### Run the app
 
 ```bash
-docker-compose up 
-./gradlew run -P env=dev \
-    -Dovh.applicationKey=xxxx \
-    -Dovh.applicationSecret=xxxx \
-    -Dovh.consumerKey=xxxx 
+
+docker-compose up
+
+OVH_APPLICATION_KEY=xxxx OVH_APPLICATION_SECRET=xxxx OVH_CONSUMER_KEY=xxxx ./gradlew run -P env=dev 
+
 ```
 
 ```bash

@@ -1,7 +1,7 @@
 buildscript {
   ext {
-    kotlin_version = '1.2.41'
-    vertx_version = '3.5.1'
+    kotlin_version = '1.2.61'
+    vertx_version = '3.5.2'
     arrow_version = "0.7.1"
   }
 
@@ -14,7 +14,7 @@ plugins {
   id 'java'
   id 'application'
   id 'com.github.johnrengelman.shadow' version '1.2.3'
-  id 'org.jetbrains.kotlin.kapt' version '1.2.41'
+  id 'org.jetbrains.kotlin.kapt' version '1.2.61'
 }
 
 apply plugin: 'kotlin'
@@ -93,15 +93,19 @@ run {
   if (
     (project.hasProperty('env') && project['env'] == 'dev') ||
             (System.getenv('ENV') == 'dev')) {
+
     args = ['run', mainVerticleName,
             "--launcher-class=$mainClassName",
             "--redeploy=src/**/*.*",
             "--on-redeploy=./gradlew classes"
     ]
+
+    systemProperties = System.properties
  } else {
    args = ['run', mainVerticleName,
            "--launcher-class=$mainClassName"
    ]
+    systemProperties = System.properties
  }
 }
 
