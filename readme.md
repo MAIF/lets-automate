@@ -1,6 +1,6 @@
 # Let's Automate
 
-Automate Let's Encrypt certificate issuance, renewal and synchronize with CleverCloud.
+Automate Let's Encrypt certificate issuance, renewal and synchronize with CleverCloud (or any API-drivable hosting service).
 
 <p align="center">
     <img src="https://github.com/MAIF/lets-automate/raw/master/src/main/resources/public/img/letsAutomate.png?token=ABgKYW3Y2Gn5vNsGYGSAJjWaPA4ZTZSZks5bQ1bCwA%3D%3D" height="250">
@@ -9,13 +9,13 @@ Automate Let's Encrypt certificate issuance, renewal and synchronize with Clever
 
 ## Description
 
-Let's automate allow you to create certificate and publish them to clever cloud with automatic renewal. 
-Let's automate needs an ovh account in order to create DNS records to perform the let's encrypt DNS challenge. Let's automate is also integrated with slack so all the event are published to a dedicated topic.  
+Let's automate allows you to create Let's Encrypt certificates and publish them to Clever Cloud with automatic renewal (or any API-drivable hosting service if you want to contribute). 
+Let's automate needs an OVH account in order to create DNS records to perform the [Let's Encrypt DNS challenge](https://blog.sebian.fr/letsencrypt-dns/). Let's automate is also integrated with Slack so all the events may be published to a dedicated topic.  
 
 ## Disclamer 
 
-Let's automate is integrated with otoroshi (for the auth), ovh, clever cloud and slack. For the moment there is no other providers available. 
-If you need this tools with other DNS provider or hosting provider your contributions are welcomed! 
+Let's Automate is integrated with Otoroshi (only used for authentication), OVH, Clever Cloud and Slack. For the moment there is no other providers available. 
+If you need this tool with any other DNS provider or hosting provider your contributions are welcome! 
 
 ## Deploy the app 
 
@@ -30,7 +30,7 @@ cd ..
 gradlew shadowJar 
 ```
 
-the jar is located in the folder `build/libs/letsautomate-shadow.jar`
+The jar file is located in the folder `build/libs/letsautomate-shadow.jar`
 
 
 ### Ovh Key 
