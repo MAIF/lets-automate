@@ -31,8 +31,8 @@ module.exports = {
         LetsAutomate: "./src/index.tsx"
     },
     output: {
-        publicPath: '/assets/js/bundle/',
-        path: path.resolve(__dirname, '../src/main/resources/public/js/bundle/'),
+        publicPath: '/assets/bundle/',
+        path: path.resolve(__dirname, '../src/main/resources/public/bundle/'),
         filename: '[name].js',
         library: '[name]',
         libraryTarget: 'umd'

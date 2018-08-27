@@ -192,9 +192,9 @@ class MainVerticle : AbstractVerticle() {
                 </head>
                 <body>
                 ${if (letsAutomateConfig.env == Dev) {
-                    """<script src="http://localhost:3336/assets/js/bundle/LetsAutomate.js" type="text/javascript"></script>"""
+                    """<script src="http://localhost:3336/assets/bundle/LetsAutomate.js" type="text/javascript"></script>"""
                 } else {
-                    """<script type="text/javascript" src="/assets/js/bundle/LetsAutomate.js"></script>"""
+                    """<script type="text/javascript" src="/assets/bundle/LetsAutomate.js"></script>"""
                 }}
                   <div id="app"></div>
                   <script type="application/javascript">
