@@ -13,24 +13,24 @@ export class LoggedApp extends Component<any> {
         const className = (part: String) => part === pathname ? 'active' : 'inactive';
 
         return (
-            <div className="izanami-container container-fluid">
+            <div className="izanami-container">
                 <nav className="navbar navbar-inverse navbar-fixed-top">
-                    <div className="navbar-header col-md-2"><a href="/" className="navbar-brand"
-                                                               style={{display: 'flex'}}>Let's automate</a>
+                  <div className="container-fluid">
+                    <div className="row">
+                      <div className="navbar-header col-md-2"><a href="/" className="navbar-brand"
+                                                                       style={{display: 'flex'}}>Let's automate</a>
+                      </div>
+                      <ul className="nav navbar-nav navbar-right">
+                        <li className="dropdown userManagement"><a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i className="fa fa-cog fa-2" aria-hidden="true"></i></a><ul className="dropdown-menu"><li><a href={this.props.logout} className="link-logout"><span className="glyphicon glyphicon-off"></span><span className="topbar-userName"> {this.props.user ? this.props.user.email : ''}</span></a></li></ul></li>
+                      </ul>
+
+
+                      <form className="navbar-form navbar-left">
+                          <div className="form-group" style={{marginRight: 10}}>
+                          </div>
+                      </form>
                     </div>
-                    <div className="container-fluid">
-                        <div id="navbar" className="navbar-collapse collapse">
-                            <ul className="nav navbar-nav navbar-right">
-                                <li><a
-                                    href={this.props.logout}>{this.props.user ? this.props.user.email : ''}&nbsp;
-                                    <span className="glyphicon glyphicon-off"/></a></li>
-                            </ul>
-                            <form className="navbar-form navbar-left">
-                                <div className="form-group" style={{marginRight: 10}}>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                  </div>
                 </nav>
 
                 <div className="container-fluid">

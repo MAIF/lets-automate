@@ -75,6 +75,10 @@
 .fa-cog {
 	font-size: 1.5em;
 	top: 5px;
+  color: #fff;
+  @media screen and (min-width: 768px) {
+      padding-right: 15px;
+  }
 }
 
 #navbar .Select-control {
@@ -94,5 +98,11 @@
 @media (max-width:1200px) {
   .navbar-inverse .navbar-brand {
     font-size: 14px
+  }
+}
+
+@media screen and (min-width: 767px){
+  .navbar>.container-fluid .navbar-brand {
+      margin-left: 0;
   }
 }
