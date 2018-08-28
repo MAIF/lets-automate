@@ -184,7 +184,7 @@ class MainVerticle : AbstractVerticle() {
                   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
                   <link rel="stylesheet" href="/assets/css/bootstrap.min.css"></link>
                   <link rel="stylesheet" href="/assets/css/bootstrap-theme.min.css"></link>
-                  <link rel="icon" type="image/png" href="/assets/css/img/favicon.png"></link>
+                  <link rel="icon" type="image/png" href="/assets/img/favicon.png"></link>
                   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"></link>
                   <link href="https://fonts.googleapis.com/css?family=Raleway:400,500" rel="stylesheet"></link>
                   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous" >
