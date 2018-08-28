@@ -70,16 +70,6 @@ h4 {
 }
 
 
-@media only screen and (max-width:767px) {
-  .backoffice-container {
-    margin-top: 56px
-  }
-  .sidebar {
-    display: none;
-    width: 100%
-  }
-}
-
 .backoffice-container>h3+.row {
     margin-left: 0px;
     margin-right: -10px;

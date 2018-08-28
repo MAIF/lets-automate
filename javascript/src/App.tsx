@@ -17,18 +17,13 @@ export class LoggedApp extends Component<any> {
                 <nav className="navbar navbar-inverse navbar-fixed-top">
                   <div className="container-fluid">
                     <div className="row">
-                      <div className="navbar-header col-md-2"><a href="/" className="navbar-brand"
-                                                                       style={{display: 'flex'}}>Let's automate</a>
+                      <div className="navbar-header col-sm-2">
+                        <button id="toggle-sidebar" type="button" className="navbar-toggle menu collapsed" data-toggle="collapse" data-target="#sidebar" aria-expanded="false" aria-controls="sidebar"><span className="sr-only">Toggle sidebar</span><span>Menu</span></button>
+                        <a href="/" className="navbar-brand" style={{display: 'flex'}}>Let's automate</a>
                       </div>
                       <ul className="nav navbar-nav navbar-right">
                         <li className="dropdown userManagement"><a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i className="fa fa-cog fa-2" aria-hidden="true"></i></a><ul className="dropdown-menu"><li><a href={this.props.logout} className="link-logout"><span className="glyphicon glyphicon-off"></span><span className="topbar-userName"> {this.props.user ? this.props.user.email : ''}</span></a></li></ul></li>
                       </ul>
-
-
-                      <form className="navbar-form navbar-left">
-                          <div className="form-group" style={{marginRight: 10}}>
-                          </div>
-                      </form>
                     </div>
                   </div>
                 </nav>
@@ -37,7 +32,7 @@ export class LoggedApp extends Component<any> {
                     <div className="row">
                         <div className="analytics-viewer-bottom-container"
                              style={{display: 'flex', flexDirection: 'row', width: '100%', height: '100%'}}>
-                            <div className="col-md-2 sidebar">
+                            <div className="col-sm-2 sidebar" id="sidebar">
                                 <div className="sidebar-container">
                                     <div className="sidebar-content">
                                         <ul className="nav nav-sidebar">
@@ -55,7 +50,7 @@ export class LoggedApp extends Component<any> {
                                     <div className="logoContent"><img className="logo" src="/assets/img/letsAutomate.png"/></div>
                                 </div>
                             </div>
-                            <div className="col-md-10 col-md-offset-2 main">
+                            <div className="col-xs-12 col-sm-10 col-sm-offset-2 main">
                                 <div className="row">
                                     <div className="izanami-container">
                                         <div className="row">
