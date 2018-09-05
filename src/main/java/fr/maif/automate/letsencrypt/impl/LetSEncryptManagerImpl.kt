@@ -70,13 +70,13 @@ class LetSEncryptManagerImpl(
             val acc = letSEncryptUser.getOrCreateAccount(config.accountId).obsKRightT<Error, LetSEncryptAccount>().bind()
             LOGGER.info("Get or create account {}", effectiveDomain)
             //Then build acme account
-            val account = Observable.fromCallable ({
+            val account = Observable.fromCallable {
                 val account = AccountBuilder()
                         .agreeToTermsOfService()
                         .useKeyPair(acc.keys)
                         .create(session)
                 account.right()
-            }).observeOn(Schedulers.io()).obsKEitherT().bind()
+            }.observeOn(Schedulers.io()).obsKEitherT().bind()
 
             LOGGER.info("ordering certificate for {}", effectiveDomain)
             val order = orderLetsEncryptCertificate(account, effectiveDomain, isWildCard).obsKRightT<Error, Order>().bind()
@@ -355,6 +355,8 @@ class LetSEncryptUserPostgres(private val pgClient: AsyncSQLClient) : LetSEncryp
                                         .flatMap { Single.error<LetSEncryptAccount>(e) }
                             }.flatMap { a ->
                                 connexion.rxCommit().toSingle { a }
+                            }.doFinally {
+                                connexion.rxClose().subscribe()
                             }
                 }
     }

@@ -63,6 +63,11 @@ class MainVerticle : AbstractVerticle() {
         private val LOGGER: Logger = LoggerFactory.getLogger(MainVerticle::class.java)
     }
 
+    override fun stop(stopFuture: Future<Void>?) {
+        LOGGER.info("Server is stopping bye bye")
+        super.stop(stopFuture)
+    }
+
     override fun start(startFuture: Future<Void>) {
 
         Json.mapper.registerModule(KotlinModule())
