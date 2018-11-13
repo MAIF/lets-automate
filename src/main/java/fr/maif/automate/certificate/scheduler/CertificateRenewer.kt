@@ -69,7 +69,7 @@ class CertificateRenewer(
                     .toObservable()
                     .map { all ->
                         val toRenew = all.list().filter { isCertificateExpired(it) }
-                        LOGGER.debug("""Finding certificates to renew in $all.
+                        LOGGER.info("""Finding certificates to renew in $all.
                           | -Now is ${LocalDateTime.now()}\n
                           | -expire: ${LocalDateTime.now().minusDays(30)}
                           | Found $toRenew
