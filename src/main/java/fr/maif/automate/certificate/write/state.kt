@@ -27,7 +27,7 @@ object State {
 
         fun get(id: Key): Option<CertificateState> = data[id].toOption()
 
-        fun list() = data.toList().map { it.second }
+        fun list(): List<CertificateState> = data.toList().map { it.second }
 
         fun delete(id: Key): AllCertificates {
             data.remove(id)

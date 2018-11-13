@@ -1,10 +1,8 @@
 package fr.maif.automate.certificate.write
 
-import arrow.core.Either
+import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.core.getOrElse
-import arrow.core.left
 import fr.maif.automate.commons.Error
 import fr.maif.automate.commons.eventsourcing.EventEnvelope
 import fr.maif.automate.commons.eventsourcing.EventReader
@@ -178,27 +176,35 @@ class CertificateEventStore (
                 when (validation) {
                     is Left -> Single.just(validation.a.left() as Either<Error, CertificateEvent>)
                     is Right -> {
-                        val c = state.get(State.Key(domain, subdomain)).get()
-                        certificatePublisher.publishCertificate(domain, c.privateKey!!, c.csr!!, c.certificate!!)
-                                .flatMap {r ->
-                                    when (r) {
-                                        is Right -> {
-                                            val event: CertificateEvent = CertificatePublished(domain, subdomain, LocalDateTime.now())
-                                            persist(domain, event).map { it.map { _ -> event } }
-                                        }
-                                        is Left -> {
-                                            val event = CertificatePublishFailure(domain, subdomain, r.a.message)
-                                            persist(domain, event)
+                        val mayBeState: Option<State.CertificateState> = state.get(State.Key(domain, subdomain))
+                        when (mayBeState) {
+                            is Some ->
+                                certificatePublisher.publishCertificate(domain, mayBeState.t.privateKey!!, mayBeState.t.csr!!, mayBeState.t.certificate!!)
+                                    .flatMap {r ->
+                                        when (r) {
+                                            is Right -> {
+                                                val event: CertificateEvent = CertificatePublished(domain, subdomain, LocalDateTime.now())
+                                                persist(domain, event).map { it.map { _ -> event } }
+                                            }
+                                            is Left -> {
+                                                val event = CertificatePublishFailure(domain, subdomain, r.a.message)
+                                                persist(domain, event)
                                                     .map { _ -> Left(r.a) }
+                                            }
                                         }
-                                    }
-                                }.onErrorResumeNext { e ->
-                                    LOGGER.error("Error while publishing certificate", e)
-                                    val cause = e.message ?: ""
-                                    val event = CertificatePublishFailure(domain, subdomain, cause)
-                                    persist(domain, event)
+                                    }.onErrorResumeNext { e ->
+                                        LOGGER.error("Error while publishing certificate", e)
+                                        val cause = e.message ?: ""
+                                        val event = CertificatePublishFailure(domain, subdomain, cause)
+                                        persist(domain, event)
                                             .map { _ -> Left(Error(cause)) }
-                                }
+                                    }
+                            is None ->
+                                Single.just(
+                                    CertificatePublishFailure(domain, subdomain, "Certificate state not found for $domain $subdomain").left() as Either<Error, CertificateEvent>
+                                )
+                        }
+
                     }
                 }
             }

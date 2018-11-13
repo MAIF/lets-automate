@@ -89,7 +89,7 @@ class CertificateRouter(certificates: Certificates) {
         response.write("")
         certificates.eventsView.eventsStream(lastId).subscribe({ (id, evt) ->
             context.response().write("id: $id\ndata: ${evt.encode()}\n\n")
-        }, { e ->
+        }, {
             //LOGGER.error("Error during sse", e)
             //context.response().end()
         })

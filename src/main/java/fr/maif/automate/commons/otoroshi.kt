@@ -1,7 +1,7 @@
 package fr.maif.automate.commons
 
 import arrow.core.*
-import arrow.typeclasses.binding
+import arrow.instances.option.applicative.*
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
@@ -55,9 +55,7 @@ class OtoroshiHandler(private val config: OtoroshiConfig, private val env: Env):
                     true
                 }
 
-                Option.monad().binding {
-                    val state = maybeState.bind()
-                    val claim = maybeClaim.bind()
+                Option.applicative().tupled(maybeState, maybeClaim).fix().map { (state, claim) ->
 
                     Try {
                         val decoded: DecodedJWT = verifier.verify(claim)
@@ -72,8 +70,8 @@ class OtoroshiHandler(private val config: OtoroshiConfig, private val env: Env):
                                 LOGGER.error("Error no session found ")
                                 routingContext.response().headers().add(config.headerGatewayStateResp, state)
                                 routingContext.response()
-                                        .setStatusCode(401)
-                                        .endWithJson(json { obj("message" to "Unauthorized" ) })
+                                    .setStatusCode(401)
+                                    .endWithJson(json { obj("message" to "Unauthorized" ) })
                             }
                         }
 
@@ -82,11 +80,12 @@ class OtoroshiHandler(private val config: OtoroshiConfig, private val env: Env):
                         LOGGER.error("Error decoding token ", e)
                         routingContext.response().headers().add(config.headerGatewayStateResp, maybeState.getOrElse { "--" })
                         routingContext.response()
-                                .setStatusCode(401)
-                                .endWithJson(json { obj("message" to "Unauthorized" ) })
+                            .setStatusCode(401)
+                            .endWithJson(json { obj("message" to "Unauthorized" ) })
                     }
 
                     Unit
+
                 }.fix().getOrElse {
                     LOGGER.error("Error during otoroshi filter")
                     routingContext.response().headers().add(config.headerGatewayStateResp, maybeState.getOrElse { "--" })

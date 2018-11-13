@@ -122,7 +122,7 @@ class AllDomainView(
                         }
                         is CertificateDeleted -> {
                             val (domain, subdomain) = event
-                            datas[domain].toOption().forEach { it.deleteCertificate(subdomain) }
+                            datas[domain].toOption().toList().forEach { it.deleteCertificate(subdomain) }
                         }
                     }
                 }

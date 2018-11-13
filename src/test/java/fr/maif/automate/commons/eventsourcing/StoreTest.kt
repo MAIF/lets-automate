@@ -8,6 +8,7 @@ import io.kotlintest.specs.*
 import io.reactivex.Single
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
+import fr.maif.automate.*
 
 sealed class VikingCommand: Command
 data class CreateViking(val id: String): VikingCommand()
@@ -92,16 +93,13 @@ class StoreTest: FunSpec() {
         val city = "Kattegat"
 
         val vikingCreated: Either<Error, VikingEvent> = store.onCommand(CreateViking(id)).blockingGet()
-        vikingCreated should beInstanceOf(Either.Right::class)
-        vikingCreated.get() shouldBe VikingCreated(id)
+        vikingCreated shouldBe VikingCreated(id)
 
         val nameUpdated: Either<Error, VikingEvent> = store.onCommand(UpdateName(name)).blockingGet()
-        nameUpdated should beInstanceOf(Either.Right::class)
-        nameUpdated.get() shouldBe NameUpdated(name)
+        nameUpdated shouldBe NameUpdated(name)
 
         val cityUpdated: Either<Error, VikingEvent> = store.onCommand(UpdateCity(city)).blockingGet()
-        cityUpdated should beInstanceOf(Either.Right::class)
-        cityUpdated.get() shouldBe CityUpdated(city)
+        cityUpdated shouldBe CityUpdated(city)
 
         store.state().blockingGet() shouldBe Viking(id, name, city)
     }
@@ -122,8 +120,7 @@ class StoreTest: FunSpec() {
         val store = VikingStore(id, eventStore, VikingReader())
 
         val cityUpdated: Either<Error, VikingEvent> = store.onCommand(UpdateCity("Kattegat")).blockingGet()
-        cityUpdated should beInstanceOf(Either.Right::class)
-        cityUpdated.get() shouldBe CityUpdated(city)
+        cityUpdated shouldBe CityUpdated(city)
 
         store.state().blockingGet() shouldBe Viking(id, name, city)
     }
