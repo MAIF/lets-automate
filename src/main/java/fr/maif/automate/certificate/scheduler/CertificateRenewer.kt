@@ -22,8 +22,8 @@ class CertificateRenewer(
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(CertificateRenewer::class.java)
 
-        fun isCertificateExpired(c: State.CertificateState): Boolean =
-          c.certificate?.expire?.isAfter(LocalDateTime.now().minusDays(30)) ?: false
+        fun isCertificateExpired(c: State.CertificateState, d: LocalDateTime = LocalDateTime.now()): Boolean =
+          c.certificate?.expire?.isBefore(d.plusDays(30)) ?: false
     }
 
     fun startScheduler() {
@@ -71,7 +71,7 @@ class CertificateRenewer(
                         val toRenew = all.list().filter { isCertificateExpired(it) }
                         LOGGER.info("""Finding certificates to renew in $all.
                           | -Now is ${LocalDateTime.now()}\n
-                          | -expire: ${LocalDateTime.now().minusDays(30)}
+                          | -expire: ${LocalDateTime.now().plusDays(30)}
                           | Found $toRenew
                           | """.trimMargin())
                         toRenew
