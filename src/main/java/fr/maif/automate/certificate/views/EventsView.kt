@@ -44,5 +44,4 @@ class EventsView(private val eventStore: EventStore, private val eventReader: Ev
         }
     }
 
-
 }

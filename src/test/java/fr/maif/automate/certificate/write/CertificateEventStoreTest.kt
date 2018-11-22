@@ -1,9 +1,8 @@
 package fr.maif.automate.certificate.write
 
-import arrow.core.Either
+import arrow.core.*
+import arrow.core.Either.Left
 import arrow.core.Either.Right
-import arrow.core.None
-import arrow.core.right
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -23,6 +22,7 @@ import io.vertx.core.json.Json
 import org.shredzone.acme4j.util.KeyPairUtils
 import java.security.KeyPair
 import java.time.LocalDateTime
+import fr.maif.automate.*
 
 class CertificateEventStoreTest: StringSpec() {
 
@@ -106,33 +106,4 @@ class CertificateEventStoreTest: StringSpec() {
         }
     }
 
-    private infix fun CertificateEventStore.shouldHaveState(state: State.CertificateState) {
-        val data = this.state().blockingGet().data.values
-        forAll(data){ d ->
-            val (domain, subdomain, wildcard, _, privateKey, csr, certificate) = d
-            val (domain1, subdomain1, wildcard1, _, privateKey1, csr1, certificate1) = state
-            domain shouldEqual  domain1
-            subdomain shouldEqual  subdomain1
-            wildcard shouldEqual  wildcard1
-            privateKey?.stringify() shouldEqual  privateKey1?.stringify()
-            csr shouldEqual  csr1
-            certificate?.certificate shouldEqual certificate1?.certificate
-            certificate?.chain shouldEqual certificate1?.chain
-        }
-    }
-
-    private infix fun <T>  Either<Error, T>.shouldBe(expected: T): Unit {
-        this should  beInstanceOf(Right::class)
-        this.get() shouldBe expected
-    }
-
-    private infix fun <T>  Either<Error, T>.shouldBe(expected: (T) -> Unit): Unit {
-        this should  beInstanceOf(Right::class)
-        expected(this.get())
-    }
-
-    private infix fun <T>  Either<Error, T>.shouldBeError(expected: Error): Unit {
-        this should beInstanceOf(Either.Left::class)
-        this.left().get() shouldBe expected
-    }
 }

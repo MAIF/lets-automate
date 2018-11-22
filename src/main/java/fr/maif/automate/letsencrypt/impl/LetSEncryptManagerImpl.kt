@@ -1,11 +1,12 @@
 package fr.maif.automate.letsencrypt.impl
 
 import arrow.core.*
-import arrow.data.EitherT
-import arrow.data.fix
+import arrow.data.*
 import arrow.effects.*
 import arrow.instances.monadError
 import arrow.typeclasses.binding
+import arrow.instances.either.applicative.*
+import arrow.effects.observablek.monad.*
 import fr.maif.automate.commons.Error
 import fr.maif.automate.commons.LetSEncryptConfig
 import fr.maif.automate.dns.DnsManager
@@ -71,13 +72,13 @@ class LetSEncryptManagerImpl(
             val acc = letSEncryptUser.getOrCreateAccount(config.accountId).obsKRightT<Error, LetSEncryptAccount>().bind()
             LOGGER.info("Get or create account {}", effectiveDomain)
             //Then build acme account
-            val account = Observable.fromCallable ({
+            val account = Observable.fromCallable {
                 val account = AccountBuilder()
                         .agreeToTermsOfService()
                         .useKeyPair(acc.keys)
                         .create(session)
                 account.right()
-            }).observeOn(Schedulers.io()).obsKEitherT().bind()
+            }.observeOn(Schedulers.io()).obsKEitherT().bind()
 
             LOGGER.info("ordering certificate for {}", effectiveDomain)
             val order = orderLetsEncryptCertificate(account, effectiveDomain, isWildCard).obsKRightT<Error, Order>().bind()
@@ -106,6 +107,16 @@ class LetSEncryptManagerImpl(
         return obsK
                 .observable
                 .singleOrError()
+                .doOnSuccess { _ ->
+                    removeLetsEncrypotDnsRecords(domain, subdomain).subscribe({ s ->
+                        when (s) {
+                            is Either.Left -> LOGGER.error("Error removing records for domain $domain and subdomain $subdomain: ${s.a.message}")
+                            is Either.Right -> { }
+                        }
+                    }, { e ->
+                        LOGGER.error("Error removing records for domain $domain and subdomain $subdomain", e)
+                    })
+                }
     }
 
 
@@ -119,7 +130,7 @@ class LetSEncryptManagerImpl(
                             .flatMap {
                                 it.fold({
                                     Observable.just(Left(it))
-                                }, {r ->
+                                }, { r ->
                                     LOGGER.info("polling dns domain {}, {}", rootDomain, r)
                                     pollDns(rootDomain, r).toObservable()
                                 })
@@ -162,6 +173,7 @@ class LetSEncryptManagerImpl(
     private fun createLetSEncryptDnsRecord(rootDomain: String, subdomain: Option<String>, challenge: Dns01Challenge): Single<Either<Error, Record>> {
         val digest = challenge.digest
         val acmeSubdomain = subdomain.map { "_acme-challenge.${it}" }.getOrElse { "_acme-challenge" }
+
         val record = Record(
                 target = digest,
                 subDomain = acmeSubdomain,
@@ -190,7 +202,23 @@ class LetSEncryptManagerImpl(
         }
     }
 
-    private fun pollDns(domain: String, record: Record): Single<Either<Error, List<String>>> =
+    private fun removeLetsEncrypotDnsRecords(rootDomain: String, subdomain: Option<String>): Single<Either<Error, Unit>> {
+        val acmeSubdomain = subdomain.map { "_acme-challenge.${it}" }.getOrElse { "_acme-challenge" }
+        return dnsManager.getDomain(rootDomain).flatMap { domain ->
+            val toDelete = domain.records.filter { it.subDomain == acmeSubdomain }
+            Observable.fromIterable(toDelete)
+                    .flatMap {record ->
+                        dnsManager.deleteRecord(rootDomain, record.id!!).toObservable()
+                    }
+                    .toList()
+                    .map { res ->
+                        ListK(res).sequence(Either.applicative()).fix()
+                    }
+                    .map { it.map { _ -> Unit }}
+        }
+    }
+
+    private fun pollDns(domain: String, record: Record): Single<Either<Error, Pair<Record, List<String>>>> =
             Observable
                     .interval(30, TimeUnit.SECONDS)
                     .take(6, TimeUnit.HOURS)
@@ -206,8 +234,8 @@ class LetSEncryptManagerImpl(
                     }
                     .filter { it.isNotEmpty() && it.contains(record.target) }
                     .take(1)
-                    .map { l -> Right(l) as Either<Error, List<String>> }
-                    .single(Left(Error("Dns record not found after 6 hours ")) as Either<Error, List<String>>)
+                    .map { l -> Right(record to l) as Either<Error, Pair<Record, List<String>>> }
+                    .single(Left(Error("Dns record not found after 6 hours ")) as Either<Error, Pair<Record, List<String>>>)
                     .doOnSuccess { event ->
                         event.fold({
                             err -> LOGGER.error("Error polling dns record {}: {}", record, err)
@@ -329,6 +357,8 @@ class LetSEncryptUserPostgres(private val pgClient: AsyncSQLClient) : LetSEncryp
                                         .flatMap { Single.error<LetSEncryptAccount>(e) }
                             }.flatMap { a ->
                                 connexion.rxCommit().toSingle { a }
+                            }.doFinally {
+                                connexion.rxClose().subscribe()
                             }
                 }
     }

@@ -4,6 +4,7 @@ import arrow.core.Either
 import fr.maif.automate.certificate.Certificates
 import fr.maif.automate.certificate.write.CertificateEvent
 import fr.maif.automate.certificate.write.RenewCertificate
+import fr.maif.automate.certificate.write.State
 import fr.maif.automate.commons.Error
 import fr.maif.automate.commons.Interval
 import io.reactivex.Observable
@@ -20,6 +21,9 @@ class CertificateRenewer(
 
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(CertificateRenewer::class.java)
+
+        fun isCertificateExpired(c: State.CertificateState, d: LocalDateTime = LocalDateTime.now()): Boolean =
+          c.certificate?.expire?.isBefore(d.plusDays(30)) ?: false
     }
 
     fun startScheduler() {
@@ -64,8 +68,14 @@ class CertificateRenewer(
                     .state()
                     .toObservable()
                     .map { all ->
-                        all.list().filter { c ->
-                            c.certificate?.expire?.isBefore(LocalDateTime.now().minusDays(30)) ?: false
-                        }
+                        val toRenew = all.list().filter { isCertificateExpired(it) }
+                        LOGGER.info("""Finding certificates to renew in $all.
+                          | -Now is ${LocalDateTime.now()}\n
+                          | -expire: ${LocalDateTime.now().plusDays(30)}
+                          | Found $toRenew
+                          | """.trimMargin())
+                        toRenew
                     }
+
+
 }

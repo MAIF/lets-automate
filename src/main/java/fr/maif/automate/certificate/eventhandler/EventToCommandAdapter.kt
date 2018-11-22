@@ -28,7 +28,10 @@ class EventToCommandAdapter(private val eventStore: EventStore, val certificates
 
                 }, { e ->
                     LOGGER.error("Error consuming command stream, going to restart", e)
-                    ref.get().toOption().forEach { it.dispose() }
+                    ref.get().toOption().forall{d ->
+                      d.dispose()
+                      true
+                    }
                     ref.set(adaptaterStream().subscribe())
                 })
         ref.set(disposable)
@@ -66,7 +69,7 @@ class EventToCommandAdapter(private val eventStore: EventStore, val certificates
                     when (mayBeCommand) {
                         is Some -> {
                             certificates.onCommand(mayBeCommand.t)
-                                    .flatMap { r ->
+                                    .flatMap {
                                         //when (r) {
                                             LOGGER.info("Command success, commiting from froup id $GROUP_ID and sequence_num $sequence")
                                             eventStore.commit(GROUP_ID, sequence)

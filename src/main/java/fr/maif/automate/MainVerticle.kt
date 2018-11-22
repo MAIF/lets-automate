@@ -51,7 +51,7 @@ class FakeCertificateConsumer(): CertificatePublisher {
         return Observable
                 .interval(1, TimeUnit.SECONDS)
                 .first(1)
-                .map{ _ -> domain.right() as Either<Error, Unit> }
+                .map{ domain.right() as Either<Error, Unit> }
         //return Single.error(RuntimeException("Oups"))
     }
 }
@@ -63,6 +63,11 @@ class MainVerticle : AbstractVerticle() {
         private val LOGGER: Logger = LoggerFactory.getLogger(MainVerticle::class.java)
     }
 
+    override fun stop(stopFuture: Future<Void>?) {
+        LOGGER.info("Server is stopping bye bye")
+        super.stop(stopFuture)
+    }
+
     override fun start(startFuture: Future<Void>) {
 
         Json.mapper.registerModule(KotlinModule())
@@ -72,7 +77,7 @@ class MainVerticle : AbstractVerticle() {
         LOGGER.info("Configuration loaded $letsAutomateConfig")
 
         val pgConfig = letsAutomateConfig.postgresConfig
-        initDb(pgConfig).subscribe ({ ok ->
+        initDb(pgConfig).subscribe ({
 
             val postgresClient = PostgreSQLClient.createShared(vertx, pgConfigToJson(pgConfig))
 

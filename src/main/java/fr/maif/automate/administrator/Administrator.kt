@@ -23,7 +23,7 @@ data class Administrator(val id: String, val email: String, val isAdmin: Boolean
 
         fun fromOtoroshiJwtToken(jwt: DecodedJWT): Option<Administrator> {
             val claims = jwt.claims
-            return claims.getOption("name").map{ it.asString() }.map {name ->
+            return claims.getOption("name").map{ it.asString() }.map {
                 val userId = claims.getOption("user_id").map{it.asString()}.orElse { claims.get("user_id").toOption().map { it.asString() } }.getOrElse { "NA" }
                 val email  = claims.getOption("email").map{ it.asString()}.getOrElse { "NA" }
                 val isAdmin = claims

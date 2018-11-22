@@ -98,7 +98,7 @@ data class RenewCertificate(val domain: String, val subdomain: Option<String>, v
         fun validate(command: RenewCertificate, state: State.AllCertificates): Either<Error, RenewCertificate> {
             val (domain, subdomain) = command
             return state.get(State.Key(domain, subdomain)).toEither { Error("Domain $domain should be created") }
-                    .flatMap { s ->
+                    .flatMap {
                         validateSubdomain(domain, command.subdomain).map { _ ->  command}
 //                        .flatMap { _ ->
 //                            Either.cond(!s.reordered, {command}, {Error("Invalid state, certificate should be reordered first")})

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Preparing build"
+echo "Preparing build.gradle"
 
 LOCATION=`pwd`
 
@@ -15,7 +15,7 @@ function build_ui {
 	echo "Installing JS deps in javascript"
 	cd ./javascript
 	yarn install
-	echo "Running JS build"
+	echo "Running JS build.gradle"
 	yarn run build
 	echo "Destroying dependencies cache"
 	rm -rf ./node_modules
