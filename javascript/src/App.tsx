@@ -14,55 +14,51 @@ export class LoggedApp extends Component<any> {
 
         return (
             <div className="izanami-container">
-                <nav className="navbar navbar-inverse navbar-fixed-top">
-                  <div className="container-fluid">
-                    <div className="row">
-                      <div className="navbar-header col-sm-2">
-                        <button id="toggle-sidebar" type="button" className="navbar-toggle menu collapsed" data-toggle="collapse" data-target="#sidebar" aria-expanded="false" aria-controls="sidebar"><span className="sr-only">Toggle sidebar</span><span>Menu</span></button>
-                        <a href="/" className="navbar-brand" style={{display: 'flex'}}>Let's automate</a>
-                      </div>
-                      <ul className="nav navbar-nav navbar-right">
-                        <li className="dropdown userManagement"><a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i className="fa fa-cog fa-2" aria-hidden="true"></i></a><ul className="dropdown-menu"><li><a href={this.props.logout} className="link-logout"><span className="glyphicon glyphicon-off"></span><span className="topbar-userName"> {this.props.user ? this.props.user.email : ''}</span></a></li></ul></li>
-                      </ul>
-                    </div>
-                  </div>
-                </nav>
+              <nav className="navbar navbar-expand-md fixed-top p-0">
+                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+                  Menu
+                </button>
+                <a className="navbar-header navbar-brand col-12 col-md-2" href="#">Let's Automate</a>
+                 <ul className="navbar-nav ml-auto">
+                   <li className="nav-item dropdown">
+                     <a className="" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                       <i className="fas fa-cog" aria-hidden="true"></i>
+                     </a>
+                     <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                       <a className="dropdown-item" href="#">{this.props.user ? this.props.user.email : ''}</a>
+                     </div>
+                   </li>
+                 </ul>
+              </nav>
+              <div className="container-fluid">
+                <div className="row">
+                    <div className="col-md-2 sidebar" id="sidebar">
+                      <div className="sidebar-container">
+                        <div className="sidebar-content">
+                          <ul className="nav nav-sidebar flex-column">
 
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="analytics-viewer-bottom-container"
-                             style={{display: 'flex', flexDirection: 'row', width: '100%', height: '100%'}}>
-                            <div className="col-sm-2 sidebar" id="sidebar">
-                                <div className="sidebar-container">
-                                    <div className="sidebar-content">
-                                        <ul className="nav nav-sidebar">
-                                            <li className={className("/")}>
-                                                <Link to="/"><h3 style={{marginTop: 0, marginLeft: -25}}><i className="fa fa-tachometer"/> Home
-                                                </h3>
-                                                </Link>
-                                            </li>
-                                            <li className={className("/identities")}>
-                                                <Link to="/domains" style={{cursor: 'pointer'}}><i
-                                                    className="fa fa-id-badge"/>Domains</Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div className="logoContent"><img className="logo" src="/assets/img/letsAutomate.png"/></div>
-                                </div>
-                            </div>
-                            <div className="col-xs-12 col-sm-10 col-sm-offset-2 main">
-                                <div className="row">
-                                    <div className="izanami-container">
-                                        <div className="row">
-                                            <Switch>
-                                                <Route exact path="/" component={ HomePage } />
-                                                <Route exact path="/domains" component={ DomainsPage } />
-                                                <Route exact path="/domains/:id/history" component={ CertificateHistoryPage } />
-                                                <Route exact path="/unauthorized" component={ UnauthorizedPage } />
-                                            </Switch>
-                                        </div>
-                                    </div>
-                                </div>
+                            <li className={className("/")}>
+                                <Link to="/"><h2 style={{marginTop: 0, marginLeft: -25}}><i className="fas fa-tachometer-alt"/> Home
+                                </h2>
+                                </Link>
+                            </li>
+                            <li className={className("/identities")}>
+                                <Link to="/domains" style={{cursor: 'pointer'}}><i
+                                    className="far fa-id-badge"/>Domains</Link>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="logoContent"><img className="logo" src="/assets/img/letsAutomate.png"/></div>
+                      </div>
+                    </div>
+                    <div className="col-xs col-sm-10 offset-sm-2 main">
+                            <div className="row">
+                                <Switch>
+                                    <Route exact path="/" component={ HomePage } />
+                                    <Route exact path="/domains" component={ DomainsPage } />
+                                    <Route exact path="/domains/:id/history" component={ CertificateHistoryPage } />
+                                    <Route exact path="/unauthorized" component={ UnauthorizedPage } />
+                                </Switch>
                             </div>
                         </div>
                     </div>

@@ -87,7 +87,7 @@ export class DomainsPage extends Component<any, DomainsPageState> {
                             onClick={() => {
                                 this.sendCommand(command)
                             }}>
-                            Retry  <i className="far fa-question-circle text-danger" title={title} />
+                            Retry  <i className="far fa-question-circle" title={title} />
                         </button>
                     </div>
                 </div>
@@ -105,7 +105,7 @@ export class DomainsPage extends Component<any, DomainsPageState> {
                 onClick={() => {
                     this.sendCommand(PublishCertificate({domain, subdomain: d.subdomain}))
                 }}>
-                <i className="glyphicon glyphicon-pencil"/> to clever cloud
+                <i className="fa fa-pencil-alt"/> to clever cloud
             </button>
         } else {
           return;
@@ -368,13 +368,13 @@ export class DomainsPage extends Component<any, DomainsPageState> {
                 }
                 <div className="row">
 
-                    <div className="col-sm-offset-1 col-sm-11 subTable">
-                      <div className="pull-left text-right">
+                    <div className="offset-sm-1 col-sm-11 subTable">
+                      <div className="pull-left">
                         {!rootDomain.newCertificate &&
-                        <button className="btn btn-sm btn-success" onClick={this.addNewCertificate(rootDomain.name)}><i className="fa fa-plus"/></button>
+                        <button className="btn btn-sm btn-success" onClick={this.addNewCertificate(rootDomain.name)}><i className="fas fa-plus"/></button>
                         }
                         {rootDomain.newCertificate &&
-                        <button className="btn btn-sm btn-success" disabled ><i className="fa fa-plus"/></button>
+                        <button className="btn btn-sm btn-success" disabled ><i className="fas fa-plus"/></button>
                         }
                       </div>
                         <ReactTable
@@ -424,7 +424,7 @@ export class DomainsPage extends Component<any, DomainsPageState> {
                 return (
                     <div style={{textAlign: 'center', height: '100%'}}>
                         <Link className="btn btn-sm btn-primary" to={`/domains/${d.name}/history`}>
-                            <i className="glyphicon glyphicon-eye-open" />
+                            <i className="far fa-eye" />
                         </Link>
                     </div>
                 );
@@ -451,19 +451,9 @@ export class DomainsPage extends Component<any, DomainsPageState> {
     public render() {
         return [
             <Title key="domain-title" title={"Domains"}/>,
-            <div key="domain-body" className="row">
-                <div className="col-md-12">
-                    <div className="col-md-12">
-                        <div className="row">
-                            <div className="row">
-                                <div>
-                                    <div className="rrow">
-                                        {this.domains()}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div key="domain-body" className="col-md-12">
+                <div className="rrow">
+                    {this.domains()}
                 </div>
             </div>
         ];

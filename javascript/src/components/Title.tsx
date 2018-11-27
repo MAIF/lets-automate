@@ -11,10 +11,10 @@ export class Title extends Component<TitleProps> {
             return null;
         } else {
             return (
-                <div className="fixedH3">
-                    <h3 className="page-header">
+                <div className="fixedTitle">
+                    <h1 className="page-header">
                         {this.props.title}
-                    </h3>
+                    </h1>
                 </div>
             );
         }

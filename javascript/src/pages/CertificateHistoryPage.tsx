@@ -45,32 +45,22 @@ export class CertificateHistoryPage extends Component<RouteComponentProps<any>, 
 
 
         return [
-            <div className="fixedH3">
-                <h3 className="page-header">
-                    <Link to={"/domains"}><i className="glyphicon glyphicon-chevron-left"/></Link>
+            <div className="fixedTitle">
+                <h1 className="page-header">
+                    <Link to={"/domains"}><i className="fas fa-chevron-left fa--margin-right"/></Link>
                     History
-                </h3>
+                </h1>
             </div>,
-            <div key="domain-body" className="row">
-                <div className="col-md-12">
-                    <div className="col-md-12">
-                        <div className="row">
-                            <div className="row">
-                                <div>
-                                    <div className="rrow">
-                                        <ReactTable
-                                            className="fulltable -striped -highlight"
-                                            data={this.state.events}
-                                            sortable={true}
-                                            filterable={true}
-                                            defaultPageSize={10}
-                                            columns={columns}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div key="domain-body" className="col-md-12">
+                <div className="rrow">
+                    <ReactTable
+                        className="fulltable -striped -highlight"
+                        data={this.state.events}
+                        sortable={true}
+                        filterable={true}
+                        defaultPageSize={10}
+                        columns={columns}
+                    />
                 </div>
             </div>
         ];

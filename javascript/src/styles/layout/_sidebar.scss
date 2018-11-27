@@ -1,7 +1,7 @@
 .sidebar {
-  background: -moz-linear-gradient(top, $fondBody 1%, $fondNavbar 100%);
-  background: -webkit-linear-gradient(top, $fondBody 1%, $fondNavbar);
-  background: linear-gradient(180deg, $fondBody 1%, $fondNavbar);
+  background: -moz-linear-gradient(top, #373735 1%, #494948 100%);
+  background: -webkit-linear-gradient(top, #373735 1%, #494948);
+  background: linear-gradient(180deg, #373735 1%, #494948);
   position: fixed;
   top: 51px;
   bottom: 0;
@@ -13,83 +13,86 @@
   overflow-y: auto;
   border-right: none;
 
-  .active a {
-    color: $primaryColor;
-  }
-
   a {
-    color: $colorGris;
+    color: #E6E6E6;
   }
 
-  h2 a,
-  h3 {
-    color: $primaryColor;
+  .active a {
+    color: #c8d400;
+  }
+
+  h2,
+  h2 a {
+    color: #c8d400;
     font-size: 15px;
     text-transform: uppercase;
     margin-left: 10px;
   }
 
-  i {
+  i.far,
+  i.fas {
     margin-right: 5px;
   }
-}
 
-.sidebar-container {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-}
+  .sidebar-container {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
 
-.sidebar-content {
-  flex-grow: 1;
-}
+  .sidebar-content {
+    flex-grow: 1;
+  }
 
-.nav-sidebar {
-  margin-right: -21px;
-  margin-left: -20px;
-  margin-bottom: 20px;
+  .nav-sidebar {
+    margin-right: -21px;
+    margin-left: -20px;
+    margin-bottom: 20px;
+  }
 
-  > li > a {
+  .nav-sidebar > li,
+  .nav-sidebar > li > a {
+    position: relative;
+    display: block;
+  }
+
+  .nav-sidebar > li > a {
+    transition-duration: 1s;
     padding: 5px 10px 5px 36px;
-    &.active{
-      color: $primaryColor;
-    }
   }
-}
 
-.nav-sidebar-plus {
-  padding-left: 20px;
-  margin-top: -15px;
-
-  > li > a {
-    padding: 5px 10px 5px 36px;
-
-    &:hover {
-      margin-left: -20px;
-      padding-left: 56px;
-    }
+  .nav-sidebar > li > a:focus,
+  .nav-sidebar > li > a:hover {
+    text-decoration: none;
+    background-color: #9e9e9e;
+    color: #fff;
+    border-color: #c8d400;
   }
-}
 
-.logoContent {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.logo {
-  width: 50%;
-  left: 25%;
-}
-
-
-
-@media only screen and (max-width:767px) {
-  .izanami-container {
-    margin-top: 0px
+  .nav-sidebar > li > h2 > a {
+    padding: 5px 0 5px 30px;
+    margin-left: -30px;
+    display: block;
+    transition-duration: 1s;
   }
-  .sidebar {
-    display: none;
-    top:50px;
-    width: 100%
+
+  .nav-sidebar > li > h2 > a:focus,
+  .nav-sidebar > li > h2 > a:hover {
+    text-decoration: none;
+    background-color: #9e9e9e;
+    color: #fff;
+  }
+
+  .logoContent {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .logo {
+    width: 50%;
+    left: 25%;
+  }
+  @media screen and (max-width: 767px) {
+    width: 100%;
   }
 }

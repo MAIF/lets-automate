@@ -13,6 +13,10 @@
 		height: 40px !important;
 	}
 
+	.rt-expander:after {
+	    border-top-color: $grisTexte;
+	}
+
 	.-pageSizeOptions {
 		display: none !important;
 	}
@@ -52,5 +56,9 @@
 
 	span.label.table-env {
 	  margin-right: 10px;
+	}
+
+	.subTable {
+	    background-color: $fondNavbar;
 	}
 }
