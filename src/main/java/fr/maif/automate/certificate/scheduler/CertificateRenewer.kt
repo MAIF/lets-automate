@@ -31,6 +31,7 @@ class CertificateRenewer(
                 .flatMap {
                     LOGGER.info("Looking for certificate to renew")
                     findDomainToRenew()
+                            .onErrorReturn { emptyList() }
                             .doOnNext {domains ->
                                 if (domains.isNotEmpty()) {
                                     LOGGER.info("Found ${domains.map { it.domain }} to renew")

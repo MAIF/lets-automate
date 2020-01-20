@@ -4,8 +4,8 @@ import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
 import fr.maif.automate.commons.Error
 import fr.maif.automate.commons.eventsourcing.InMemoryEventStore
 import fr.maif.automate.commons.stringify
@@ -86,7 +86,7 @@ class CertificateEventStoreTest: StringSpec() {
             val domain = "viking.com"
             val privateKey = KeyPairUtils.createKeyPair(2048)
             val csr = "csr"
-            val x509Certificate =x509FromString(cert)
+            val x509Certificate = x509FromString(cert)
             val certificate = Certificate(x509Certificate, LocalDateTime.now(), emptyList())
             val wildcard = true
 
