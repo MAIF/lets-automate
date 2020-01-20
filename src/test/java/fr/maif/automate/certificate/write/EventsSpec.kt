@@ -7,7 +7,7 @@ import fr.maif.automate.commons.eventsourcing.EventEnvelope
 import fr.maif.automate.commons.stringify
 import fr.maif.automate.commons.x509FromString
 import fr.maif.automate.letsencrypt.Certificate
-import io.kotlintest.matchers.shouldBe
+import io.kotlintest.shouldBe
 import io.kotlintest.specs.StringSpec
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject

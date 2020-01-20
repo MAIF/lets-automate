@@ -15,6 +15,7 @@ import fr.maif.automate.letsencrypt.LetSEncryptManager
 import fr.maif.automate.letsencrypt.LetSEncryptCertificate
 import fr.maif.automate.publisher.CertificatePublisher
 import io.kotlintest.forAll
+import io.kotlintest.*
 import io.kotlintest.matchers.*
 import io.kotlintest.specs.StringSpec
 import io.reactivex.Single

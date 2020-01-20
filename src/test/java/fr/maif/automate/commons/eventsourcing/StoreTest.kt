@@ -3,6 +3,7 @@ package fr.maif.automate.commons.eventsourcing
 import arrow.core.*
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import fr.maif.automate.commons.Error
+import io.kotlintest    .*
 import io.kotlintest.matchers.*
 import io.kotlintest.specs.*
 import io.reactivex.Single

@@ -96,8 +96,8 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
-  testCompile "io.kotlintest:kotlintest:2.0.6"
-  testCompile "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+  testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
+  testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }
 
 // Redeploy watcher.
@@ -144,6 +144,8 @@ task stage {
 }
 
 test {
+  useJUnitPlatform()
+
   testLogging {
     outputs.upToDateWhen {false}
     events "passed", "skipped", "failed", "standardOut", "standardError"

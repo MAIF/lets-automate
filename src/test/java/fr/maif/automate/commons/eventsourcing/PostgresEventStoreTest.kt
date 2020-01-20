@@ -1,0 +1,83 @@
+package fr.maif.automate.commons.eventsourcing
+
+import arrow.core.extensions.id.applicative.unit
+import io.kotlintest.*
+import io.kotlintest.specs.StringSpec
+import io.vertx.kotlin.core.json.json
+import io.vertx.kotlin.core.json.obj
+import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.ext.asyncsql.AsyncSQLClient
+import io.vertx.reactivex.ext.asyncsql.PostgreSQLClient
+import liquibase.Liquibase
+import liquibase.database.Database
+import liquibase.database.DatabaseFactory
+import liquibase.database.jvm.JdbcConnection
+import liquibase.resource.ClassLoaderResourceAccessor
+import org.postgresql.ds.PGSimpleDataSource
+
+class PostgresEventStoreTest : StringSpec() {
+  val eventDb = "certificate_events"
+  val offsetDb = "certificate_events_offsets"
+  val host = "localhost"
+  val database = "lets_automate"
+  val user = "default_user"
+  val password = "password"
+  val port = 5455
+  val vertx = Vertx.vertx()
+  val pgClient: AsyncSQLClient = PostgreSQLClient.createShared(vertx, json { obj(
+      "host" to host,
+      "port" to port,
+      "database" to database,
+      "username" to user,
+      "password" to password
+  )})
+
+  override fun beforeTest(testCase: TestCase) {
+    // BeforeTest here
+    pgClient.rxUpdate("""
+      delete from $eventDb
+    """
+    ).flatMap {
+      pgClient.rxUpdate("""
+      delete from $offsetDb
+    """
+      )
+    }.map{ unit() }.onErrorReturn { unit() }.blockingGet()
+  }
+
+  override fun afterSpec(spec: Spec) {
+    pgClient.close()
+  }
+
+  init {
+
+    val datasource = PGSimpleDataSource()
+    datasource.serverName = host
+    datasource.databaseName = database
+    datasource.user = user
+    datasource.portNumber = port
+    datasource.password = password
+
+    val connection = datasource.connection
+    val db: Database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(JdbcConnection(connection))
+    val liquidbase = Liquibase("db_changes.sql", ClassLoaderResourceAccessor(), db)
+    liquidbase.update("")
+    connection.close()
+
+
+    val store = PostgresEventStore(eventDb, offsetDb, pgClient)
+
+    "CRUD" {
+        store.loadEvents().toList().blockingGet() shouldBe emptyList<EventEnvelope>()
+      println("yeah")
+      val event = EventEnvelope(
+          "1", "1", 1L,
+          "EventType", "1", json { obj("name" to "test") }
+      )
+      store.persist("1", event).blockingGet()
+      store.loadEvents().toList().blockingGet() shouldBe listOf(event)
+    }
+  }
+
+
+}

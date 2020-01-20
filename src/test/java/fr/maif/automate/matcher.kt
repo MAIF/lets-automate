@@ -7,6 +7,7 @@ import fr.maif.automate.certificate.write.State
 import fr.maif.automate.commons.Error
 import fr.maif.automate.commons.stringify
 import io.kotlintest.forAll
+import io.kotlintest.*
 import io.kotlintest.matchers.*
 
 
@@ -15,13 +16,13 @@ import io.kotlintest.matchers.*
     forAll(data){ d ->
       val (domain, subdomain, wildcard, _, privateKey, csr, certificate) = d
       val (domain1, subdomain1, wildcard1, _, privateKey1, csr1, certificate1) = state
-      domain shouldEqual  domain1
-      subdomain shouldEqual  subdomain1
-      wildcard shouldEqual  wildcard1
-      privateKey?.stringify() shouldEqual  privateKey1?.stringify()
-      csr shouldEqual  csr1
-      certificate?.certificate shouldEqual certificate1?.certificate
-      certificate?.chain shouldEqual certificate1?.chain
+      domain shouldBe  domain1
+      subdomain shouldBe  subdomain1
+      wildcard shouldBe  wildcard1
+      privateKey?.stringify() shouldBe  privateKey1?.stringify()
+      csr shouldBe  csr1
+      certificate?.certificate shouldBe certificate1?.certificate
+      certificate?.chain shouldBe certificate1?.chain
     }
   }
 
