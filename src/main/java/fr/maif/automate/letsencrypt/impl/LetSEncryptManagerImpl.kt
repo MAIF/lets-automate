@@ -30,6 +30,7 @@ import org.shredzone.acme4j.util.KeyPairUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.StringWriter
+import java.lang.RuntimeException
 import java.security.KeyPair
 import java.security.cert.X509Certificate
 import java.time.LocalDateTime
@@ -108,14 +109,16 @@ class LetSEncryptManagerImpl(
                 .observable
                 .singleOrError()
                 .doOnSuccess { _ ->
-                    removeLetsEncrypotDnsRecords(domain, subdomain).subscribe({ s ->
-                        when (s) {
-                            is Either.Left -> LOGGER.error("Error removing records for domain $domain and subdomain $subdomain: ${s.a.message}")
-                            is Either.Right -> { }
-                        }
-                    }, { e ->
-                        LOGGER.error("Error removing records for domain $domain and subdomain $subdomain", e)
-                    })
+                    removeLetsEncrypotDnsRecords(domain, subdomain)
+                        .map { it.fold({
+                          l -> throw RuntimeException(l.message)
+                        }, { it })}
+                        .retry(3) { e -> true }
+                        .subscribe({ s ->
+
+                        }, { e ->
+                            LOGGER.error("Error removing records for domain $domain and subdomain $subdomain", e)
+                        })
                 }
     }
 
