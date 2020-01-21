@@ -112,7 +112,10 @@ class CertificateEventStore (
                                     val cause = e.message ?: ""
                                     val event = CertificateOrderFailure(domain, subdomain, cause)
                                     persist(domain, event)
-                                            .map { _ -> Left(Error(cause)) }
+                                            .map { e ->
+                                                LOGGER.error("Error persisting event $event ", e)
+                                                Left(Error(cause))
+                                            }
                                 }
                     }
                 }
@@ -144,6 +147,7 @@ class CertificateEventStore (
                                             persist(domain, event).map { it.map { _ -> event } }
                                         }
                                         is Left -> {
+                                            LOGGER.error("Error while re-ordering certificate $r")
                                             val event = CertificateReOrderFailure(domain, subdomain, r.a.message)
                                             persist(domain, event)
                                                     .map { _ -> Left(r.a) }
@@ -154,7 +158,10 @@ class CertificateEventStore (
                                     val cause = e.message ?: ""
                                     val event = CertificateReOrderFailure(domain, subdomain, cause)
                                     persist(domain, event)
-                                            .map { _ -> Left(Error(cause)) }
+                                            .map { e ->
+                                                LOGGER.error("Error persisting event $event ", e)
+                                                Left(Error(cause))
+                                            }
                                 }
                     }
                 }
@@ -197,6 +204,7 @@ class CertificateEventStore (
                                         val cause = e.message ?: ""
                                         val event = CertificatePublishFailure(domain, subdomain, cause)
                                         persist(domain, event)
+                                            .retry(3)
                                             .map { _ -> Left(Error(cause)) }
                                     }
                             is None ->

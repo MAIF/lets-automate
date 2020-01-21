@@ -71,7 +71,7 @@ class EventToCommandAdapter(private val eventStore: EventStore, val certificates
                             certificates.onCommand(mayBeCommand.t)
                                     .flatMap {
                                         //when (r) {
-                                            LOGGER.info("Command success, commiting from froup id $GROUP_ID and sequence_num $sequence")
+                                            LOGGER.info("Command success, commiting from group id $GROUP_ID and sequence_num $sequence")
                                             eventStore.commit(GROUP_ID, sequence)
 //                                            is Either.Right -> {
 //

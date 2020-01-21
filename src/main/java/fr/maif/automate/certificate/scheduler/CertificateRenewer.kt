@@ -31,6 +31,7 @@ class CertificateRenewer(
                 .flatMap {
                     LOGGER.info("Looking for certificate to renew")
                     findDomainToRenew()
+                            .onErrorReturn { emptyList() }
                             .doOnNext {domains ->
                                 if (domains.isNotEmpty()) {
                                     LOGGER.info("Found ${domains.map { it.domain }} to renew")
@@ -69,7 +70,7 @@ class CertificateRenewer(
                     .toObservable()
                     .map { all ->
                         val toRenew = all.list().filter { isCertificateExpired(it) }
-                        LOGGER.info("""Finding certificates to renew in $all.
+                        LOGGER.info("""Finding certificates to renew in ${all.list().map { c -> (c.domain to c.subdomain) to c.certificate?.expire }}.
                           | -Now is ${LocalDateTime.now()}\n
                           | -expire: ${LocalDateTime.now().plusDays(30)}
                           | Found $toRenew

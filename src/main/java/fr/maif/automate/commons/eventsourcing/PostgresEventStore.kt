@@ -84,7 +84,7 @@ class PostgresEventStore(private val table: String, private val offetsTable: Str
     override fun commit(groupId: String, sequenceNum: Long): Single<Unit> {
         return pgClient.rxGetConnection().flatMap { connection ->
             connection.rxSetAutoCommit(false)
-                    .toSingleDefault(Unit).flatMap { _ ->
+                    .toSingleDefault(Unit).flatMap {
                         LOGGER.debug("Searching last commit for $groupId")
                         connection.rxQueryWithParams(
                                 "SELECT * FROM $offetsTable WHERE group_id = ?",
