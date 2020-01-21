@@ -42,7 +42,7 @@ class PostgresEventStoreTest : StringSpec() {
       delete from $offsetDb
     """
       )
-    }.map{ unit() }.onErrorReturn { unit() }.blockingGet()
+    }.map{ Unit }.onErrorReturn { Unit }.blockingGet()
   }
 
   override fun afterSpec(spec: Spec) {
@@ -76,6 +76,23 @@ class PostgresEventStoreTest : StringSpec() {
       )
       store.persist("1", event).blockingGet()
       store.loadEvents().toList().blockingGet() shouldBe listOf(event)
+    }
+
+    "Reload events" {
+      val event1 = EventEnvelope(
+          "1", "1", 1L,
+          "EventType", "1", json { obj("name" to "test") }
+      )
+      val event2 = EventEnvelope(
+          "2", "1", 2L,
+          "EventType", "1", json { obj("name" to "test2") }
+      )
+      store.persist("1", event1).blockingGet()
+      store.persist("2", event2).blockingGet()
+      store.commit("test_group", 1L).blockingGet()
+
+      val events = store.eventStreamByGroupId("test_group").take(1).toList().blockingGet()
+      events shouldBe listOf(event2)
     }
   }
 

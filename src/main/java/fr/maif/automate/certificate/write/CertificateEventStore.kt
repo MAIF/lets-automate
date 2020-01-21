@@ -197,6 +197,7 @@ class CertificateEventStore (
                                         val cause = e.message ?: ""
                                         val event = CertificatePublishFailure(domain, subdomain, cause)
                                         persist(domain, event)
+                                            .retry(3)
                                             .map { _ -> Left(Error(cause)) }
                                     }
                             is None ->
