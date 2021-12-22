@@ -10,11 +10,11 @@ Automate Let's Encrypt certificate issuance, renewal and synchronize with Clever
 ## Description
 
 Let's automate allows you to create Let's Encrypt certificates and publish them to Clever Cloud with automatic renewal (or any API-drivable hosting service if you want to contribute). 
-Let's automate needs an OVH account in order to create DNS records to perform the [Let's Encrypt DNS challenge](https://blog.sebian.fr/letsencrypt-dns/). Let's automate is also integrated with Slack so all the events may be published to a dedicated topic.  
+Let's automate needs an OVH account in order to create DNS records to perform the [Let's Encrypt DNS challenge](https://blog.sebian.fr/letsencrypt-dns/). Let's automate is also integrated with Teams so all the events may be published to a dedicated topic.  
 
 ## Disclamer 
 
-Let's Automate is integrated with Otoroshi (only used for authentication), OVH, Clever Cloud and Slack. For the moment there is no other providers available. 
+Let's Automate is integrated with Otoroshi (only used for authentication), OVH, Clever Cloud and Teams. For the moment there is no other providers available. 
 If you need this tool with any other DNS provider or hosting provider your contributions are welcome! 
 
 ## Deploy the app 
@@ -23,6 +23,7 @@ If you need this tool with any other DNS provider or hosting provider your contr
 
 ```
 git clone https://github.com/MAIF/lets-automate.git
+nvm use
 cd javascript 
 yarn install 
 yarn build 
@@ -83,39 +84,37 @@ Set the consumer key, your application id and secret in the configuration file.
 
 ### Configuration 
 
-| System Property  | Env variable  | Default |
-| ---------------- | ------------- | ------------- |
-| env | ENV | dev |
-| http.port | HTTP_PORT | 8080 |
-| http.host | HTTP_HOST | 0.0.0.0 |
-| logout | LOGOUT_URL | |
+| System Property                     | Env variable  | Default |
+|-------------------------------------| ------------- | ------------- |
+| env                                 | ENV | dev |
+| http.port                           | HTTP_PORT | 8080 |
+| http.host                           | HTTP_HOST | 0.0.0.0 |
+| logout                              | LOGOUT_URL | |
 | certificates.pollingInterval.period | LETSENCRYPT_POLLING_PERIOD | 5 |
-| certificates.pollingInterval.unit | LETSENCRYPT_POLLING_UNIT | HOUR |
-| ovh.applicationKey | OVH_APPLICATION_KEY | |
-| ovh.applicationSecret | OVH_APPLICATION_SECRET | |
-| ovh.consumerKey | OVH_CONSUMER_KEY | | 
-| ovh.host | OVH_HOST | https://api.ovh.com |
-| letsencrypt.server | LETSENCRYPT_SERVER | acme://letsencrypt.org/staging | 
-| letsencrypt.accountId | LETSENCRYPT_ACCOUNT_ID | account | 
-| postgres.host | POSTGRESQL_ADDON_HOST | localhost |
-| postgres.port | POSTGRESQL_ADDON_PORT | 5432 |
-| postgres.database | POSTGRESQL_ADDON_DB | lets_automate | 
-| postgres.username | POSTGRESQL_ADDON_USER | default_user |
-| postgres.password | POSTGRESQL_ADDON_PASSWORD | password |
-| clevercloud.host | CLEVER_HOST | https://api.clever-cloud.com/ | 
-| clevercloud.consumerKey | CLEVER_CONSUMER_KEY | | 
-| clevercloud.consumerSecret | CLEVER_CONSUMER_SECRET | |
-| clevercloud.clientToken | CLEVER_CLIENT_TOKEN | |
-| clevercloud.clientSecret | CLEVER_CLIENT_SECRET | | 
-| otoroshi.headerRequestId | FILTER_REQUEST_ID_HEADER_NAME | |
-| otoroshi.headerGatewayStateResp | FILTER_GATEWAY_STATE_RESP_HEADER_NAME | |
-| otoroshi.headerGatewayState | FILTER_GATEWAY_STATE_HEADER_NAME | |
-| otoroshi.headerClaim | FILTER_CLAIM_HEADER_NAME | |
-| otoroshi.sharedKey | CLAIM_SHAREDKEY | |
-| otoroshi.issuer | OTOROSHI_ISSUER | |
-| slack.token | SLACK_TOKEN | |
-| slack.channel | SLACK_CHANNEL | |
-| slack.url | SLACK_URL | https://slack.com/api |
+| certificates.pollingInterval.unit   | LETSENCRYPT_POLLING_UNIT | HOUR |
+| ovh.applicationKey                  | OVH_APPLICATION_KEY | |
+| ovh.applicationSecret               | OVH_APPLICATION_SECRET | |
+| ovh.consumerKey                     | OVH_CONSUMER_KEY | | 
+| ovh.host                            | OVH_HOST | https://api.ovh.com |
+| letsencrypt.server                  | LETSENCRYPT_SERVER | acme://letsencrypt.org/staging | 
+| letsencrypt.accountId               | LETSENCRYPT_ACCOUNT_ID | account | 
+| postgres.host                       | POSTGRESQL_ADDON_HOST | localhost |
+| postgres.port                       | POSTGRESQL_ADDON_PORT | 5432 |
+| postgres.database                   | POSTGRESQL_ADDON_DB | lets_automate | 
+| postgres.username                   | POSTGRESQL_ADDON_USER | default_user |
+| postgres.password                   | POSTGRESQL_ADDON_PASSWORD | password |
+| clevercloud.host                    | CLEVER_HOST | https://api.clever-cloud.com/ | 
+| clevercloud.consumerKey             | CLEVER_CONSUMER_KEY | | 
+| clevercloud.consumerSecret          | CLEVER_CONSUMER_SECRET | |
+| clevercloud.clientToken             | CLEVER_CLIENT_TOKEN | |
+| clevercloud.clientSecret            | CLEVER_CLIENT_SECRET | | 
+| otoroshi.headerRequestId            | FILTER_REQUEST_ID_HEADER_NAME | |
+| otoroshi.headerGatewayStateResp     | FILTER_GATEWAY_STATE_RESP_HEADER_NAME | |
+| otoroshi.headerGatewayState         | FILTER_GATEWAY_STATE_HEADER_NAME | |
+| otoroshi.headerClaim                | FILTER_CLAIM_HEADER_NAME | |
+| otoroshi.sharedKey                  | CLAIM_SHAREDKEY | |
+| otoroshi.issuer                     | OTOROSHI_ISSUER | |
+| teams.url                           | TEAMS_URL | |
 
 ### Run the app 
 
@@ -130,8 +129,7 @@ java -jar letsautomate-shadow.jar \
     -Dclevercloud.consumerSecret=xxxx \
     -Dclevercloud.clientToken=xxxx \
     -Dclevercloud.clientSecret=xxxx \
-    -Dslack.token=xxxx \
-    -Dslack.channel=xxxx 
+    -Dteams.url=xxxx
 
 ```
 
@@ -161,8 +159,7 @@ OVH_APPLICATION_SECRET=xxxx
 OVH_CONSUMER_KEY=xxxx
 OVH_HOST=https://api.ovh.com
 PORT=8080
-SLACK_CHANNEL=xxxx
-SLACK_TOKEN=xoxb-xxx
+TEAMS_URL=xxxx
 ```
 
 ## Run in development
@@ -178,6 +175,7 @@ OVH_APPLICATION_KEY=xxxx OVH_APPLICATION_SECRET=xxxx OVH_CONSUMER_KEY=xxxx ./gra
 ```
 
 ```bash
+nvm use
 cd javascript 
 yarn install 
 yarn start 

@@ -7,9 +7,9 @@ LOCATION=`pwd`
 function build_ui {
 	echo "Sourcing nvm"
 	source /home/bas/.nvm/nvm.sh
-	echo "using node version 8.6.0"
-	nvm install v8.6.0
-	nvm use v8.6.0
+	echo "using node"
+	nvm install
+	nvm use
 	echo "Installing Yarn"
 	npm install -g yarn
 	echo "Installing JS deps in javascript"
