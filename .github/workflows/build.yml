@@ -1,0 +1,31 @@
+name: build and tests
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+      - name: build frontend
+        run: yarn install && yarn run build
+      - name: Load Java version
+        run: |
+          export VERSION=$(cat ${{ github.workspace }}/.java-version)
+          echo "JAVA_VERSION=${VERSION}" >> $GITHUB_ENV
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: "gradle"
+      - name: Run postgres
+        run: docker-compose -f docker-compose.test.yml up -d
+      - name: Run build and tests
+        run: ./gradlew test
