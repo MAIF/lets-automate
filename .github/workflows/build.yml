@@ -28,6 +28,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ env.JAVA_VERSION }}
+          distribution: "temurin"
           cache: "gradle"
       - name: Run postgres
         run: docker-compose -f docker-compose.test.yml up -d
