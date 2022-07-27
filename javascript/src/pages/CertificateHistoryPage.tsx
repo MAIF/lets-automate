@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
 import {CertificateEvent, listCertificatesEvents} from "../services/CertificatesServices";
-import {RouteComponentProps} from "react-router";
 import ReactTable from "react-table";
 import {Link} from "react-router-dom";
 
@@ -11,7 +10,7 @@ interface CertificateHistoryState {
 }
 
 
-export class CertificateHistoryPage extends Component<RouteComponentProps<any>, CertificateHistoryState> {
+export class CertificateHistoryPage extends Component<any, CertificateHistoryState> {
 
     constructor(props: any) {
         super(props);
