@@ -14,6 +14,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
           cache: "yarn"
+          cache-dependency-path: javascript/yarn.json
       - name: build frontend
         run: yarn install && yarn run build
       - name: Load Java version
