@@ -2,7 +2,7 @@ package fr.maif.automate.certificate
 
 import arrow.core.Either
 import fr.maif.automate.certificate.eventhandler.EventToCommandAdapter
-import fr.maif.automate.certificate.eventhandler.SlackEventHandler
+import fr.maif.automate.certificate.eventhandler.TeamsEventHandler
 import fr.maif.automate.commons.LetsAutomateConfig
 import fr.maif.automate.commons.eventsourcing.PostgresEventStore
 import fr.maif.automate.letsencrypt.LetSEncryptManager
@@ -34,14 +34,14 @@ class Certificates(
     private val certificateEventStore = CertificateEventStore("certificate", letSEncryptManager, certificatePublisher, eventStore, eventReader)
     private val certificateRenewer = CertificateRenewer(letsAutomateConfig.certificates.pollingInterval, this)
     private val eventToCommandAdapter = EventToCommandAdapter(eventStore, this,  eventReader)
-    private val slackEventHandler = SlackEventHandler(letsAutomateConfig.env, letsAutomateConfig.slack, client, eventStore, eventReader)
+    private val teamsEventHandler = TeamsEventHandler(letsAutomateConfig.env, letsAutomateConfig.teams, client, eventStore, eventReader)
     val allDomainsView = AllDomainView(eventStore, eventReader)
     val eventsView = EventsView(eventStore, eventReader)
 
     init {
         certificateRenewer.startScheduler()
         eventToCommandAdapter.startAdapter()
-        slackEventHandler.startSlackHandler()
+        teamsEventHandler.startTeamsHandler()
     }
 
     fun state(): Single<State.AllCertificates> = certificateEventStore.state()
