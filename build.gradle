@@ -1,8 +1,8 @@
 
 buildscript {
   ext {
-    kotlin_version = '1.6.10'
-    vertx_version = '3.9.11'
+    kotlin_version = '1.7.10'
+    vertx_version = '4.3.2'
     arrow_version = "0.8.1"
   }
 
@@ -15,13 +15,13 @@ plugins {
   id "com.github.johnrengelman.shadow" version "7.1.1"
   id "application"
   id "java"
-  id "org.jetbrains.kotlin.jvm" version "1.6.10"
-  id "org.jetbrains.kotlin.kapt" version "1.6.10"
+  id "org.jetbrains.kotlin.jvm" version "1.7.10"
+  id "org.jetbrains.kotlin.kapt" version "1.7.10"
 }
 
 apply plugin: 'kotlin'
 
-sourceCompatibility = '1.8'
+sourceCompatibility = '17'
 
 mainClassName = 'io.vertx.core.Launcher'
 def mainVerticleName = 'fr.maif.automate.MainVerticle'
@@ -32,28 +32,21 @@ allprojects {
     }
 }
 
-
-repositories {
-  maven {
-    url "https://oss.sonatype.org/content/repositories/3963/"
-  }
-}
-
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
   }
 }
 
 compileKotlin {
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
   }
 }
 
 compileTestKotlin {
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "17"
   }
 }
 
@@ -63,19 +56,21 @@ dependencies {
   implementation "io.vertx:vertx-web-client:$vertx_version"
   implementation "io.vertx:vertx-rx-java2:$vertx_version"
   implementation "io.vertx:vertx-lang-kotlin:$vertx_version"
-  implementation "io.vertx:vertx-mysql-postgresql-client:$vertx_version"
-  implementation "io.reactivex.rxjava2:rxkotlin:2.2.0"
-  implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2"
-  implementation 'org.postgresql:postgresql:9.4.1212'
-  implementation "de.svenkubiak:jBCrypt:0.4.1"
-  implementation "com.auth0:java-jwt:3.1.0"
-  implementation "org.liquibase:liquibase-core:3.6.1"
+  implementation "io.vertx:vertx-pg-client:$vertx_version"
+  implementation "io.vertx:vertx-jdbc-client:$vertx_version"
+  implementation "io.vertx:vertx-sql-client:$vertx_version"
+  implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'
+  implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3'
+  implementation 'org.postgresql:postgresql:42.3.6'
+  implementation 'de.svenkubiak:jBCrypt:0.4.3'
+  implementation 'com.auth0:java-jwt:3.19.2'
+  implementation 'org.liquibase:liquibase-core:4.11.0'
 
 
-  implementation "com.typesafe:config:1.3.2"
-  implementation 'org.shredzone.acme4j:acme4j-client:2.1'
-  implementation 'org.shredzone.acme4j:acme4j-utils:2.1'
-  implementation 'ch.qos.logback:logback-classic:1.2.3'
+  implementation 'com.typesafe:config:1.4.2'
+  implementation 'org.shredzone.acme4j:acme4j-client:2.13'
+  implementation 'org.shredzone.acme4j:acme4j-utils:2.13'
+  implementation 'ch.qos.logback:logback-classic:1.2.11'
 
   implementation "io.arrow-kt:arrow-core:$arrow_version"
   implementation "io.arrow-kt:arrow-syntax:$arrow_version"
@@ -120,7 +115,7 @@ run {
 
 // Naming and packaging settings for the "shadow jar".
 shadowJar {
-  baseName = 'letsautomate'
+  archiveBaseName = "letsautomate"
   classifier = 'shadow'
 
   manifest {

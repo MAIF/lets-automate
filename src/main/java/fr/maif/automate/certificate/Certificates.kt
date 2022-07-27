@@ -13,7 +13,7 @@ import fr.maif.automate.certificate.views.EventsView
 import fr.maif.automate.certificate.write.*
 import fr.maif.automate.commons.Error
 import io.reactivex.Single
-import io.vertx.reactivex.ext.asyncsql.AsyncSQLClient
+import io.vertx.reactivex.ext.sql.SQLClient
 import io.vertx.reactivex.ext.web.client.WebClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +23,7 @@ class Certificates(
         letSEncryptManager: LetSEncryptManager,
         client: WebClient,
         certificatePublisher: CertificatePublisher,
-        postgresClient: AsyncSQLClient
+        postgresClient: SQLClient
 ) {
     companion object {
         val LOGGER: Logger = LoggerFactory.getLogger(Certificates::class.java)

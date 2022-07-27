@@ -124,6 +124,7 @@ class AllDomainView(
                             val (domain, subdomain) = event
                             datas[domain].toOption().toList().forEach { it.deleteCertificate(subdomain) }
                         }
+                        else -> throw IllegalStateException("Unknown event type")
                     }
                 }
     }

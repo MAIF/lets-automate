@@ -2,7 +2,9 @@ package fr.maif.automate.certificate.write
 
 import arrow.core.None
 import arrow.core.toOption
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import fr.maif.automate.commons.eventsourcing.EventEnvelope
 import fr.maif.automate.commons.stringify
 import fr.maif.automate.commons.x509FromString
@@ -13,6 +15,7 @@ import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
+import io.vertx.reactivex.sqlclient.templates.TupleMapper.mapper
 import org.shredzone.acme4j.util.KeyPairUtils
 import java.io.StringReader
 import java.time.LocalDateTime
@@ -20,7 +23,7 @@ import java.time.format.DateTimeFormatter
 
 class EventsSpec: StringSpec() {
     init {
-        Json.mapper.registerModule(KotlinModule())
+        ObjectMapper().registerKotlinModule()
         val dateTime = LocalDateTime.now()
         val dateTimeFormatted = DateTimeFormatter.ISO_DATE_TIME.format(dateTime)
         val reader = CertificateEventReader()
@@ -67,7 +70,8 @@ class EventsSpec: StringSpec() {
 
         "Serializing" {
             tests.forEach { p ->
-                Json.mapper.writeValueAsString(p.first.toJson()) shouldBe p.second
+                p.first.toJson().encode() shouldBe p.second
+//                Json.mapper.writeValueAsString(p.first.toJson()) shouldBe p.second
             }
         }
 

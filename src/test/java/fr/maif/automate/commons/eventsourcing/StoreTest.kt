@@ -1,13 +1,15 @@
 package fr.maif.automate.commons.eventsourcing
 
 import arrow.core.*
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import fr.maif.automate.commons.Error
 import io.kotlintest    .*
 import io.kotlintest.matchers.*
 import io.kotlintest.specs.*
 import io.reactivex.Single
-import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import fr.maif.automate.*
 
@@ -19,10 +21,9 @@ data class UpdateCity(val city: String): VikingCommand()
 sealed class VikingEvent: Event {
     override fun toJson(): JsonObject = JsonObject.mapFrom(this)
 }
-data class VikingCreated(val id: String): VikingEvent()
-data class NameUpdated(val name: String): VikingEvent()
-data class CityUpdated(val city: String): VikingEvent()
-
+data class VikingCreated(@JsonProperty("id")  val id: String?): VikingEvent()
+data class NameUpdated(@JsonProperty("name") val name: String?): VikingEvent()
+data class CityUpdated(@JsonProperty("city") val city: String?): VikingEvent()
 
 data class Viking(val id: String? = null, val name: String? = null, val city: String? = null)
 
@@ -80,7 +81,7 @@ class VikingStore(id: String, eventStore: EventStore, val reader: VikingReader) 
 class StoreTest: FunSpec() {
 
     init {
-        Json.mapper.registerModule(KotlinModule())
+        ObjectMapper().registerKotlinModule()
         applyCommands()
         applyCommandAfterRecover()
         applyCommandOnErrorAfterRecover()

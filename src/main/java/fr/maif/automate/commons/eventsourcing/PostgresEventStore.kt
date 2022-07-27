@@ -6,13 +6,13 @@ import io.reactivex.subjects.PublishSubject
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.array
 import io.vertx.kotlin.core.json.json
-import io.vertx.reactivex.ext.asyncsql.AsyncSQLClient
+import io.vertx.reactivex.ext.sql.SQLClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class PostgresEventStore(private val table: String, private val offetsTable: String, private val pgClient: AsyncSQLClient): EventStore {
+class PostgresEventStore(private val table: String, private val offetsTable: String, private val pgClient: SQLClient): EventStore {
 
     private val events = PublishSubject.create<EventEnvelope>()
 
