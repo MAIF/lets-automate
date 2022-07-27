@@ -16,7 +16,10 @@ jobs:
           cache: "yarn"
           cache-dependency-path: javascript/yarn.lock
       - name: build frontend
-        run: yarn install && yarn run build
+        run: |
+          cd javascript
+          yarn install
+          yarn run build
       - name: Load Java version
         run: |
           export VERSION=$(cat ${{ github.workspace }}/.java-version)
