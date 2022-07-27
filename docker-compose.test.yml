@@ -1,8 +1,10 @@
-version: '2'
+version: '3'
 services:
   postgresql_letsoto_test:
     image: postgres
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - 5455:5432
+      - "5455:5432"
