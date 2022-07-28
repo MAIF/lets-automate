@@ -20,9 +20,10 @@
     <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="STDOUT"/>
     </appender>
+
     <logger name="fr.maif.automate" level="DEBUG"/>
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="ASYNCSTDOUT"/>
     </root>
 

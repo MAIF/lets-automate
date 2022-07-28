@@ -1,5 +1,6 @@
 package fr.maif.automate.commons.eventsourcing
 
+import fr.maif.automate.certificate.eventhandler.TeamsEventHandler
 import io.kotlintest.Spec
 import io.kotlintest.TestCase
 import io.kotlintest.shouldBe
@@ -14,6 +15,11 @@ import liquibase.database.DatabaseFactory
 import liquibase.database.jvm.JdbcConnection
 import liquibase.resource.ClassLoaderResourceAccessor
 import org.postgresql.ds.PGSimpleDataSource
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.time.format.DateTimeFormatter
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class PostgresEventStoreTest : StringSpec() {
     val eventDb = "certificate_events"
@@ -74,13 +80,13 @@ class PostgresEventStoreTest : StringSpec() {
 
 
         val store = PostgresEventStore(eventDb, offsetDb, pgClient)
-
+        val LOGGER = LoggerFactory.getLogger(PostgresEventStoreTest::class.java) as Logger
         "CRUD" {
             store.loadEvents().toList().blockingGet() shouldBe emptyList<EventEnvelope>()
-            println("yeah")
             val event = EventEnvelope(
                 "1", "1", 1L,
-                "EventType", "1", json { obj("name" to "test") }
+                "EventType", "1", json { obj("name" to "test") },
+                LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
             )
             store.persist("1", event).blockingGet()
             store.loadEvents().toList().blockingGet() shouldBe listOf(event)
@@ -89,11 +95,13 @@ class PostgresEventStoreTest : StringSpec() {
         "Reload events" {
             val event1 = EventEnvelope(
                 "1", "1", 1L,
-                "EventType", "1", json { obj("name" to "test") }
+                "EventType", "1", json { obj("name" to "test") },
+                LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
             )
             val event2 = EventEnvelope(
                 "2", "1", 2L,
-                "EventType", "1", json { obj("name" to "test2") }
+                "EventType", "1", json { obj("name" to "test2") },
+                LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
             )
             store.persist("1", event1).blockingGet()
             store.persist("2", event2).blockingGet()

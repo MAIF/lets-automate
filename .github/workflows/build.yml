@@ -15,11 +15,6 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
           cache-dependency-path: javascript/yarn.lock
-      - name: build frontend
-        run: |
-          cd javascript
-          yarn install
-          yarn run build
       - name: Load Java version
         run: |
           export VERSION=$(cat ${{ github.workspace }}/.java-version)
@@ -32,5 +27,10 @@ jobs:
           cache: "gradle"
       - name: Run postgres
         run: docker-compose -f docker-compose.test.yml up -d
+      - name: build frontend
+        run: |
+          cd javascript
+          yarn install
+          yarn run build
       - name: Run build and tests
         run: ./gradlew test
