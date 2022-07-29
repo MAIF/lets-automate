@@ -2,7 +2,9 @@ package fr.maif.automate
 
 import arrow.core.Either
 import arrow.core.Some
+import arrow.core.identity
 import arrow.core.right
+import arrow.mtl.instances.list.monadFilter.mapFilter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.typesafe.config.Config
@@ -81,7 +83,8 @@ class MainVerticle : AbstractVerticle() {
         val pgConfig = letsAutomateConfig.postgresConfig
         initDb(pgConfig).subscribe({
 
-            val postgresClient = SQLClient.newInstance(io.vertx.ext.jdbc.JDBCClient.create(vertx.delegate, pgConfigToJson(pgConfig)))
+            val postgresClient =
+                SQLClient.newInstance(io.vertx.ext.jdbc.JDBCClient.create(vertx.delegate, pgConfigToJson(pgConfig)))
 
             val client = WebClient.create(vertx)
             val dnsManager = OvhDnsManager(client, vertx.createDnsClient(), letsAutomateConfig)
@@ -104,29 +107,34 @@ class MainVerticle : AbstractVerticle() {
             val router: Router = createRouter(letsAutomateConfig, dnsRouter, certificateRouter, otoroshiHandler)
 
             vertx.createHttpServer()
-                    .requestHandler { router }
-                    .listen(letsAutomateConfig.http.port, letsAutomateConfig.http.host) { result ->
-                        if (result.succeeded()) {
-                            LOGGER.info("Server has started on ${letsAutomateConfig.http.host}:${letsAutomateConfig.http.port}")
-                            startFuture.complete()
-                        } else {
-                            LOGGER.error("Error while starting server", result.cause())
-                            startFuture.fail(result.cause())
-                        }
+                .requestHandler(router)
+                .listen(letsAutomateConfig.http.port, letsAutomateConfig.http.host) { result ->
+                    if (result.succeeded()) {
+                        LOGGER.info("Server has started on ${letsAutomateConfig.http.host}:${letsAutomateConfig.http.port}")
+                        startFuture.complete()
+                    } else {
+                        LOGGER.error("Error while starting server", result.cause())
+                        startFuture.fail(result.cause())
                     }
-        }, {err ->
+                }
+        }, { err ->
             LOGGER.error("Error initializing DB ", err)
         })
 
     }
 
     private fun pgConfigToJson(pgConfig: PostgresConfig): JsonObject {
+        val queryParams = listOf(pgConfig.username.map { "user=${it}" }, pgConfig.password.map { "password=${it}" })
+            .mapFilter(::identity)
+            .joinToString("&")
+        val url = "jdbc:postgresql://${pgConfig.host}:${pgConfig.port}/${pgConfig.database}?${queryParams}"
         return json {
             obj(
                 listOf(
                     Some("host" to pgConfig.host),
                     Some("port" to pgConfig.port),
                     Some("database" to pgConfig.database),
+                    Some("url" to url),
                     pgConfig.username.map { "username" to it },
                     pgConfig.password.map { "password" to it }
                 ).flatMap { it.toList() }
@@ -167,22 +175,21 @@ class MainVerticle : AbstractVerticle() {
         router.route().handler(otoroshiHandler)
         router.route("/assets/*").handler(StaticHandler.create("public"))
 
+
+        router.get("/").handler(handlerRoot(letsAutomateConfig))
+        //Domains
+        router.get("/api/domains").handler(dnsRouter.listDomains)
+        router.post("/api/domains/:domain/records").handler(dnsRouter.createRecord)
+        router.put("/api/domains/:domain/records/:recordId}").handler(dnsRouter.updateRecord)
+        router.delete("/api/domains/:domain/records/:recordId").handler(dnsRouter.deleteRecord)
+        //Certificates
+        router.get("/api/certificates").handler(certificateRouter.listCertificates)
+        router.get("/api/certificates/:domain/_history").handler(certificateRouter.certificatesHistory)
+        router.get("/api/certificates/_events").handler(certificateRouter.streamEvents)
+        router.post("/api/certificates/_commands").handler(certificateRouter.applyCommand)
+        router.get("/api/certificates/:domain").handler(certificateRouter.getDomain)
+        router.get("/*").handler(handlerRoot(letsAutomateConfig))
         return router
-            .apply {
-                get("/").handler(handlerRoot(letsAutomateConfig))
-                //Domains
-                get("/api/domains").handler(dnsRouter.listDomains)
-                post("/api/domains/:domain/records").handler(dnsRouter.createRecord)
-                put("/api/domains/:domain/records/:recordId}").handler(dnsRouter.updateRecord)
-                delete("/api/domains/:domain/records/:recordId").handler(dnsRouter.deleteRecord)
-                //Certificates
-                get("/api/certificates").handler(certificateRouter.listCertificates)
-                get("/api/certificates/:domain/_history").handler(certificateRouter.certificatesHistory)
-                get("/api/certificates/_events").handler(certificateRouter.streamEvents)
-                post("/api/certificates/_commands").handler(certificateRouter.applyCommand)
-                get("/api/certificates/:domain").handler(certificateRouter.getDomain)
-                get("/*").handler(handlerRoot(letsAutomateConfig))
-            }
     }
 
     // Handlers

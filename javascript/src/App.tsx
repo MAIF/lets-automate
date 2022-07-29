@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
 import {CertificateHistoryPage, DomainsPage, HomePage, UnauthorizedPage} from "./pages";
-import {Navigate, Route, RouteProps, Routes} from 'react-router'
+import {Navigate, Route, Routes} from 'react-router'
 import {BrowserRouter, Link} from 'react-router-dom'
 import {User} from "./commons/User";
 
@@ -62,10 +62,10 @@ export class LoggedApp extends Component<any> {
                                     <div className="izanami-container">
                                         <div className="row">
                                             <Routes>
-                                                <Route path="/"><HomePage/></Route>
-                                                <Route path="/domains"><DomainsPage/></Route>
-                                                <Route path="/domains/:id/history"><CertificateHistoryPage/></Route>
-                                                <Route path="/unauthorized"><UnauthorizedPage/></Route>
+                                                <Route path="/" element={<HomePage/>} />
+                                                <Route path="/domains" element={<DomainsPage/>} />
+                                                <Route path="/domains/:id/history" element={<CertificateHistoryPage/>}/>
+                                                <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
                                             </Routes>
                                         </div>
                                     </div>
@@ -85,33 +85,29 @@ export class LetSAutomate extends React.Component {
         return (
             <Routes>
                 <Route key="route-login" path="/unauthorized" element={<UnauthorizedPage/>}/>,
-                <PrivateRoute key="private-route" path="/" component={LoggedApp} {...this.props} />
+                <Route key="private-route" path="*"
+                       element={<PrivateRoute {...this.props}><LoggedApp {...this.props}/></PrivateRoute>}/>
             </Routes>
         )
     }
 }
 
-const PrivateRoute: React.FC<RouteProps & User & any> = ({component: Component, user: User, ...rest}) => {
-    return (
-        <Route {...rest} render={(props: any) => {
-            if (!User || (User && !User.email)) {
-                return <Navigate to={'/unauthorized'}/>;
-            } else {
-                return <Component {...rest} {...props} user={User}/>;
-            }
-        }}/>
-    );
-};
+type PrivateRouteProps = {
+    user: User,
+    children: JSX.Element
+}
+
+const PrivateRoute: React.FC = ({children, user, ...rest}: PrivateRouteProps) => {
+    return ((!user || (user && !user.email)) ? <Navigate to={'/unauthorized'}/> : <>{children}</>)
+}
 
 type LetsRoutedProps = {
     user: User,
     logout: String
 }
 
-export function RoutedLetSAutomateApp(props: LetsRoutedProps) {
-    return (
-        <BrowserRouter basename="/">
-            <LetSAutomate {...props}/>
-        </BrowserRouter>
-    );
-}
+export const RoutedLetSAutomateApp = (props: LetsRoutedProps) => (
+    <BrowserRouter basename="/">
+        <LetSAutomate {...props}/>
+    </BrowserRouter>
+);

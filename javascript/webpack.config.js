@@ -39,7 +39,7 @@ module.exports = {
   },
 
   devServer: {
-    port: process.env.DEV_SERVER_PORT || 3333
+    port: 3336
   },
 
   module: {
