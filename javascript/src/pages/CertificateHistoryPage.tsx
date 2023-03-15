@@ -10,8 +10,7 @@ export function CertificateHistoryPage() {
     const [events, setEvents] = useState<CertificateEvent[]>([])
     const {id} = useParams();
     useEffect(() => {
-        console.log(id)
-        id && listCertificatesEvents(id).then(events => setEvents(events))
+        listCertificatesEvents(id).then(events => setEvents(events))
     }, [id])
 
     function getColumns() {

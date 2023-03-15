@@ -3,8 +3,10 @@ services:
   postgres:
     image: postgres
     environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "54321:5432"

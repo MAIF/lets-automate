@@ -148,6 +148,7 @@ class MainVerticle : AbstractVerticle() {
             val datasource = PGSimpleDataSource()
             datasource.serverNames = arrayOf(pgConfig.host)
             datasource.databaseName = pgConfig.database
+            datasource.portNumbers = intArrayOf(pgConfig.port)
             pgConfig.username.fold({ Unit }, { u ->
                 datasource.user = u
             })

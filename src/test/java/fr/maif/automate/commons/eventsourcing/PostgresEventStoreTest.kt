@@ -28,7 +28,7 @@ class PostgresEventStoreTest : StringSpec() {
     val database = "lets_automate_test"
     val user = "user_test"
     val password = "password_test"
-    val port = 5432
+    val port = 54321
     val vertx = Vertx.vertx()
     val url = "jdbc:postgresql://${host}:${port}/${database}?user=${user}&password=${password}"
     val pgClient: JDBCClient = JDBCClient.createShared(vertx, json {
