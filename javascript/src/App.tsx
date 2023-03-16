@@ -62,8 +62,8 @@ export class LoggedApp extends Component<any> {
                                     <div className="izanami-container">
                                         <div className="row">
                                             <Routes>
-                                                <Route path="/" element={<HomePage/>} />
-                                                <Route path="/domains" element={<DomainsPage/>} />
+                                                <Route path="/" element={<HomePage/>}/>
+                                                <Route path="/domains" element={<DomainsPage/>}/>
                                                 <Route path="/domains/:id/history" element={<CertificateHistoryPage/>}/>
                                                 <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
                                             </Routes>
@@ -86,7 +86,7 @@ export class LetSAutomate extends React.Component {
             <Routes>
                 <Route key="route-login" path="/unauthorized" element={<UnauthorizedPage/>}/>,
                 <Route key="private-route" path="*"
-                       element={<PrivateRoute {...this.props}><LoggedApp {...this.props}/></PrivateRoute>}/>
+                       element={<PrivateRoute {...this.props}/>}/>
             </Routes>
         )
     }
@@ -97,8 +97,9 @@ type PrivateRouteProps = {
     children: JSX.Element
 }
 
-const PrivateRoute: React.FC = ({children, user, ...rest}: PrivateRouteProps) => {
-    return ((!user || (user && !user.email)) ? <Navigate to={'/unauthorized'}/> : <>{children}</>)
+const PrivateRoute: React.FC = (props: PrivateRouteProps) => {
+    const {user, ...rest} = props;
+    return ((!user || (user && !user.email)) ? <Navigate to={'/unauthorized'}/> : <LoggedApp {...props}/>)
 }
 
 type LetsRoutedProps = {

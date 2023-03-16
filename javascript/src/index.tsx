@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import * as ReactDOMClient from 'react-dom/client';
 import {RoutedLetSAutomateApp} from './App'
 import * as $ from 'jquery';
 import 'whatwg-fetch'
@@ -24,8 +24,7 @@ require('bootstrap/dist/js/bootstrap.min');
 
 export function init(node: HTMLElement, strUser: string, logout: String) {
     let user: User = strUser ? JSON.parse(strUser) : null;
-    ReactDOM.render(
-        <RoutedLetSAutomateApp user={user} logout={logout} />,
-        node
-    );
+    const root = ReactDOMClient.createRoot(node);
+
+    root.render(<RoutedLetSAutomateApp user={user} logout={logout} />);
 }
