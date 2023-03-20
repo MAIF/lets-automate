@@ -12,7 +12,7 @@ buildscript {
 }
 
 plugins {
-  id "com.github.johnrengelman.shadow" version "7.1.1"
+  id "com.github.johnrengelman.shadow" version "8.1.1"
   id "application"
   id "java"
   id "org.jetbrains.kotlin.jvm" version "1.7.10"
@@ -90,6 +90,7 @@ dependencies {
 
   testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
   testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
 // Redeploy watcher.
@@ -116,7 +117,7 @@ run {
 // Naming and packaging settings for the "shadow jar".
 shadowJar {
   archiveBaseName = "letsautomate"
-  classifier = 'shadow'
+  archiveClassifier = 'shadow'
 
   manifest {
     attributes 'Main-Verticle': mainVerticleName
