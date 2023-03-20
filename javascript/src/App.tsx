@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {UnauthorizedPage, HomePage, DomainsPage, CertificateHistoryPage} from "./pages";
-import {Route, RouteProps, RouteComponentProps, Switch, Redirect, withRouter} from 'react-router'
+import {CertificateHistoryPage, DomainsPage, HomePage, UnauthorizedPage} from "./pages";
+import {Navigate, Route, Routes} from 'react-router'
 import {BrowserRouter, Link} from 'react-router-dom'
 import {User} from "./commons/User";
 
@@ -42,7 +42,8 @@ export class LoggedApp extends Component<any> {
                                     <div className="sidebar-content">
                                         <ul className="nav nav-sidebar">
                                             <li className={className("/")}>
-                                                <Link to="/"><h3 style={{marginTop: 0, marginLeft: -25}}><i className="fa fa-tachometer"/> Home
+                                                <Link to="/"><h3 style={{marginTop: 0, marginLeft: -25}}><i
+                                                    className="fa fa-tachometer"/> Home
                                                 </h3>
                                                 </Link>
                                             </li>
@@ -52,19 +53,20 @@ export class LoggedApp extends Component<any> {
                                             </li>
                                         </ul>
                                     </div>
-                                    <div className="logoContent"><img className="logo" src="/assets/img/letsAutomate.png"/></div>
+                                    <div className="logoContent"><img className="logo"
+                                                                      src="/assets/img/letsAutomate.png"/></div>
                                 </div>
                             </div>
                             <div className="col-md-10 col-md-offset-2 main">
                                 <div className="row">
                                     <div className="izanami-container">
                                         <div className="row">
-                                            <Switch>
-                                                <Route exact path="/" component={ HomePage } />
-                                                <Route exact path="/domains" component={ DomainsPage } />
-                                                <Route exact path="/domains/:id/history" component={ CertificateHistoryPage } />
-                                                <Route exact path="/unauthorized" component={ UnauthorizedPage } />
-                                            </Switch>
+                                            <Routes>
+                                                <Route path="/" element={<HomePage/>}/>
+                                                <Route path="/domains" element={<DomainsPage/>}/>
+                                                <Route path="/domains/:id/history" element={<CertificateHistoryPage/>}/>
+                                                <Route path="/unauthorized" element={<UnauthorizedPage/>}/>
+                                            </Routes>
                                         </div>
                                     </div>
                                 </div>
@@ -77,41 +79,36 @@ export class LoggedApp extends Component<any> {
     }
 }
 
-export class LetSAutomate extends Component<any> {
+export class LetSAutomate extends React.Component {
 
     render() {
         return (
-            <Switch>
-                <Route key="route-login" path="/unauthorized" component={UnauthorizedPage}/>,
-                <PrivateRoute key="private-route" path="/" component={LoggedApp} {...this.props} />
-            </Switch>
+            <Routes>
+                <Route key="route-login" path="/unauthorized" element={<UnauthorizedPage/>}/>,
+                <Route key="private-route" path="*"
+                       element={<PrivateRoute {...this.props}/>}/>
+            </Routes>
         )
     }
 }
 
-const PrivateRoute: React.SFC<RouteProps & User & any> = ({ component: Component, user: User, ...rest }) => {
-    return (
-        <Route {...rest} render={( props: RouteComponentProps<{}>) => {
-            if (!User || (User && !User.email)) {
-                return <Redirect to={{
-                    pathname: '/unauthorized',
-                    state: { from: props.location }
-                }} />;
-            } else {
-                return <Component {...rest} {...props} user={User} />;
-            }
-        }}/>
-    );
-};
-
-const LetSAutomateAppRouter = withRouter(LetSAutomate);
-
-export class RoutedLetSAutomateApp extends Component<any> {
-    render() {
-        return (
-            <BrowserRouter basename="/">
-                <LetSAutomateAppRouter {...this.props}/>
-            </BrowserRouter>
-        );
-    }
+type PrivateRouteProps = {
+    user: User,
+    children: JSX.Element
 }
+
+const PrivateRoute: React.FC = (props: PrivateRouteProps) => {
+    const {user, ...rest} = props;
+    return ((!user || (user && !user.email)) ? <Navigate to={'/unauthorized'}/> : <LoggedApp {...props}/>)
+}
+
+type LetsRoutedProps = {
+    user: User,
+    logout: String
+}
+
+export const RoutedLetSAutomateApp = (props: LetsRoutedProps) => (
+    <BrowserRouter basename="/">
+        <LetSAutomate {...props}/>
+    </BrowserRouter>
+);

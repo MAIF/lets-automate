@@ -4,7 +4,7 @@ import arrow.core.getOrElse
 import fr.maif.automate.certificate.write.*
 import fr.maif.automate.commons.Dev
 import fr.maif.automate.commons.Env
-import fr.maif.automate.commons.SlackConfig
+import fr.maif.automate.commons.TeamsConfig
 import fr.maif.automate.commons.eventsourcing.EventReader
 import fr.maif.automate.commons.eventsourcing.EventStore
 import io.reactivex.Single
@@ -15,17 +15,15 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 
-class SlackEventHandler(val env: Env, val config: SlackConfig, val client: WebClient, val eventStore: EventStore, private val eventReader: EventReader<CertificateEvent>) {
+class TeamsEventHandler(val env: Env, val config: TeamsConfig, val client: WebClient, val eventStore: EventStore, private val eventReader: EventReader<CertificateEvent>) {
 
     companion object {
-        val LOGGER = LoggerFactory.getLogger(SlackEventHandler::class.java) as Logger
-        val GROUP_ID = SlackEventHandler::class.java.simpleName
+        val LOGGER = LoggerFactory.getLogger(TeamsEventHandler::class.java) as Logger
+        val GROUP_ID = TeamsEventHandler::class.java.simpleName
     }
 
-    val slackApi = "https://slack.com/api"
-
-    fun startSlackHandler() {
-        LOGGER.info("Starting slack event handler")
+    fun startTeamsHandler() {
+        LOGGER.info("Starting Teams event handler")
         eventStore
                 .eventStreamByGroupId(GROUP_ID)
                 .map { enveloppe -> enveloppe.sequence to eventReader.read(enveloppe) }
@@ -69,16 +67,13 @@ class SlackEventHandler(val env: Env, val config: SlackConfig, val client: WebCl
         return when(env) {
             is Dev -> Single.just(Unit)
             else -> {
-                LOGGER.info("""Sending "$message" to slack channel ${config.channel} with token: ${config.token}""")
+                LOGGER.info("""Sending "$message" to Teams ${config.url}""")
 
                 client
-                        .postAbs("$slackApi/chat.postMessage")
-                        .putHeader("Authorization", "Bearer ${config.token}")
+                        .postAbs("${config.url}")
                         .putHeader("Content-Type", "application/json")
                         .rxSendJsonObject(json {
                             obj(
-                                    "token" to config.token,
-                                    "channel" to config.channel,
                                     "text" to message
                             )
                         })
@@ -87,10 +82,10 @@ class SlackEventHandler(val env: Env, val config: SlackConfig, val client: WebCl
                             eventStore.commit(GROUP_ID, sequence).subscribe()
                         }
                         .doOnSuccess { res ->
-                            LOGGER.info("Message has been sent to slack: ${res.statusCode()} with body ${res.bodyAsString()}")
+                            LOGGER.info("Message has been sent to Teams: ${res.statusCode()} with body ${res.bodyAsString()}")
                         }
                         .doOnError { e ->
-                            LOGGER.error("Error sending to slack", e)
+                            LOGGER.error("Error sending to Teams", e)
                         }
                         .map { _ -> Unit }
             }

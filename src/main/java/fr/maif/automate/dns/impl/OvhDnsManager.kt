@@ -12,14 +12,14 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.json.JsonObject
-import io.vertx.core.logging.Logger
-import io.vertx.core.logging.LoggerFactory
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.reactivex.core.buffer.Buffer
 import io.vertx.reactivex.core.dns.DnsClient
 import io.vertx.reactivex.ext.web.client.HttpResponse
 import io.vertx.reactivex.ext.web.client.WebClient
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 
 class OvhDnsManager(private val client: WebClient, private val dnsClient: DnsClient, private val letsAutomateConfig: LetsAutomateConfig) : DnsManager {
@@ -29,7 +29,7 @@ class OvhDnsManager(private val client: WebClient, private val dnsClient: DnsCli
     }
 
     private fun signRequest(method: HttpMethod = HttpMethod.GET, query: String, body: String = "", ts: Long): String {
-        val toSign = "${letsAutomateConfig.ovh.applicationSecret}+${letsAutomateConfig.ovh.consumerKey}+${method.name}+$query+$body+$ts"
+        val toSign = "${letsAutomateConfig.ovh.applicationSecret}+${letsAutomateConfig.ovh.consumerKey}+${method.name()}+$query+$body+$ts"
         val signed = HashUtils.sha1(toSign)
         LOGGER.debug("Signing $toSign to $signed")
         return "$1$$signed"

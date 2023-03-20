@@ -3,7 +3,9 @@ package fr.maif.automate.certificate.write
 import arrow.core.*
 import arrow.core.Either.Left
 import arrow.core.Either.Right
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import fr.maif.automate.commons.Error
@@ -32,7 +34,7 @@ class CertificateEventStoreTest: StringSpec() {
     }
 
     init {
-        Json.mapper.registerModule(KotlinModule())
+        ObjectMapper().registerKotlinModule()
 
         " Command should emit expected event" {
 

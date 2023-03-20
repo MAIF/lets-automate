@@ -17,7 +17,7 @@ data class LetsAutomateConfig(
         val letSEncrypt: LetSEncryptConfig,
         val postgresConfig: PostgresConfig,
         val clevercloud: CleverConfig,
-        val slack: SlackConfig,
+        val teams: TeamsConfig,
         val otoroshi: OtoroshiConfig) {
     companion object {
         fun load(config: Config): LetsAutomateConfig {
@@ -30,7 +30,7 @@ data class LetsAutomateConfig(
                 letSEncrypt = LetSEncryptConfig.load(config),
                 postgresConfig = PostgresConfig.load(config),
                 clevercloud = CleverConfig.load(config),
-                slack = SlackConfig.load(config),
+                teams = TeamsConfig.load(config),
                 otoroshi = OtoroshiConfig.load(config)
             )
         }
@@ -56,17 +56,13 @@ data class CertificatesConfig(val pollingInterval: Interval) {
     }
 }
 
-data class SlackConfig(
-    val token: String,
-    val channel: String,
+data class TeamsConfig(
     val url: String
 ) {
     companion object {
-        fun load(config: Config): SlackConfig =
-                SlackConfig(
-                        token = config.getString("slack.token"),
-                        channel = config.getString("slack.channel"),
-                        url = config.getString("slack.url")
+        fun load(config: Config): TeamsConfig =
+                TeamsConfig(
+                        url = config.getString("teams.url")
                 )
     }
 }
