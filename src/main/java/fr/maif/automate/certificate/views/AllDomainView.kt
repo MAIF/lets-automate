@@ -11,6 +11,8 @@ import io.reactivex.Single
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
@@ -76,6 +78,10 @@ class AllDomainView(
 
     private val datas = ConcurrentHashMap<String, DomainResume>()
 
+    companion object {
+        private val LOGGER: Logger = LoggerFactory.getLogger(AllDomainView::class.java)
+    }
+
     private fun update(domain: String, mayBeSubdomain: Option<String>, f: (CertificateDomainResume) -> CertificateDomainResume) {
         val domainResume = datas.getOrPut(domain){ DomainResume(domain) }
         domainResume.updateCertificate(mayBeSubdomain, f)
@@ -124,7 +130,12 @@ class AllDomainView(
                             val (domain, subdomain) = event
                             datas[domain].toOption().toList().forEach { it.deleteCertificate(subdomain) }
                         }
-                        else -> throw IllegalStateException("Unknown event type")
+                        is CertificateReOrderedStarted -> {
+                            LOGGER.info("Scheduler CertificateRenewer started")
+                        }
+                        else -> {
+                            LOGGER.warn("Unmanaged event: ${event.type()}")
+                        }
                     }
                 }
     }
