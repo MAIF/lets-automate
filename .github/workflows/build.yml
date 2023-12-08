@@ -15,14 +15,10 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
           cache-dependency-path: javascript/yarn.lock
-      - name: Load Java version
-        run: |
-          export VERSION=$(cat ${{ github.workspace }}/.java-version)
-          echo "JAVA_VERSION=${VERSION}" >> $GITHUB_ENV
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version-file: ".java-version"
           distribution: "temurin"
           cache: "gradle"
       - name: Run postgres
