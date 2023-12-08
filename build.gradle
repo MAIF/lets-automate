@@ -1,30 +1,31 @@
-
 buildscript {
-  ext {
-    kotlin_version = '1.7.10'
-    vertx_version = '4.3.2'
-    arrow_version = "0.8.1"
-  }
+    ext {
+        kotlin_version = '1.9.21'
+        vertx_version = '4.5.0'
+        arrow_version = "0.8.1"
+    }
 
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+    }
 }
 
 plugins {
-  id "com.github.johnrengelman.shadow" version "8.1.1"
-  id "application"
-  id "java"
-  id "org.jetbrains.kotlin.jvm" version "1.7.10"
-  id "org.jetbrains.kotlin.kapt" version "1.7.10"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+    id "application"
+    id "java"
+    id "org.jetbrains.kotlin.jvm" version "${kotlin_version}"
+    id "org.jetbrains.kotlin.kapt" version "${kotlin_version}"
 }
 
 apply plugin: 'kotlin'
 
-sourceCompatibility = '17'
-
-mainClassName = 'io.vertx.core.Launcher'
 def mainVerticleName = 'fr.maif.automate.MainVerticle'
+def launcherClassName = 'io.vertx.core.Launcher'
+
+application {
+    mainClass.set(launcherClassName)
+}
 
 allprojects {
     repositories {
@@ -32,99 +33,79 @@ allprojects {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-  kotlinOptions {
-    jvmTarget = "17"
-  }
-}
-
-compileKotlin {
-  kotlinOptions {
-    jvmTarget = "17"
-  }
-}
-
-compileTestKotlin {
-  kotlinOptions {
-    jvmTarget = "17"
-  }
+kotlin {
+    jvmToolchain (21)
 }
 
 dependencies {
-  implementation "io.vertx:vertx-core:$vertx_version"
-  implementation "io.vertx:vertx-web:$vertx_version"
-  implementation "io.vertx:vertx-web-client:$vertx_version"
-  implementation "io.vertx:vertx-rx-java2:$vertx_version"
-  implementation "io.vertx:vertx-lang-kotlin:$vertx_version"
-  implementation "io.vertx:vertx-pg-client:$vertx_version"
-  implementation "io.vertx:vertx-jdbc-client:$vertx_version"
-  implementation "io.vertx:vertx-sql-client:$vertx_version"
-  implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'
-  implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3'
-  implementation 'org.postgresql:postgresql:42.3.6'
-  implementation 'de.svenkubiak:jBCrypt:0.4.3'
-  implementation 'com.auth0:java-jwt:3.19.2'
-  implementation 'org.liquibase:liquibase-core:4.20.0'
+    implementation "io.vertx:vertx-core:$vertx_version"
+    implementation "io.vertx:vertx-web:$vertx_version"
+    implementation "io.vertx:vertx-web-client:$vertx_version"
+    implementation "io.vertx:vertx-rx-java2:$vertx_version"
+    implementation "io.vertx:vertx-lang-kotlin:$vertx_version"
+    implementation "io.vertx:vertx-pg-client:$vertx_version"
+    implementation "io.vertx:vertx-jdbc-client:$vertx_version"
+    implementation "io.vertx:vertx-sql-client:$vertx_version"
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3'
+    implementation 'org.postgresql:postgresql:42.3.6'
+    implementation 'de.svenkubiak:jBCrypt:0.4.3'
+    implementation 'com.auth0:java-jwt:3.19.2'
+    implementation 'org.liquibase:liquibase-core:4.20.0'
 
 
-  implementation 'com.typesafe:config:1.4.2'
-  implementation 'org.shredzone.acme4j:acme4j-client:2.13'
-  implementation 'org.shredzone.acme4j:acme4j-utils:2.13'
-  implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'com.typesafe:config:1.4.2'
+    implementation 'org.shredzone.acme4j:acme4j-client:2.13'
+    implementation 'org.shredzone.acme4j:acme4j-utils:2.13'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
 
-  implementation "io.arrow-kt:arrow-core:$arrow_version"
-  implementation "io.arrow-kt:arrow-syntax:$arrow_version"
-  implementation "io.arrow-kt:arrow-typeclasses:$arrow_version"
-  implementation "io.arrow-kt:arrow-data:$arrow_version"
-  implementation "io.arrow-kt:arrow-instances-core:$arrow_version"
-  implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
+    implementation "io.arrow-kt:arrow-core:$arrow_version"
+    implementation "io.arrow-kt:arrow-syntax:$arrow_version"
+    implementation "io.arrow-kt:arrow-typeclasses:$arrow_version"
+    implementation "io.arrow-kt:arrow-data:$arrow_version"
+    implementation "io.arrow-kt:arrow-instances-core:$arrow_version"
+    implementation "io.arrow-kt:arrow-instances-data:$arrow_version"
 
-  implementation "io.arrow-kt:arrow-mtl:$arrow_version"
-  implementation "io.arrow-kt:arrow-effects:$arrow_version"
-  implementation "io.arrow-kt:arrow-effects-instances:$arrow_version"
-  implementation "io.arrow-kt:arrow-effects-rx2:$arrow_version"
-  implementation "io.arrow-kt:arrow-effects-rx2-instances:$arrow_version"
-  implementation "io.arrow-kt:arrow-effects-kotlinx-coroutines:$arrow_version"
+    implementation "io.arrow-kt:arrow-mtl:$arrow_version"
+    implementation "io.arrow-kt:arrow-effects:$arrow_version"
+    implementation "io.arrow-kt:arrow-effects-instances:$arrow_version"
+    implementation "io.arrow-kt:arrow-effects-rx2:$arrow_version"
+    implementation "io.arrow-kt:arrow-effects-rx2-instances:$arrow_version"
+    implementation "io.arrow-kt:arrow-effects-kotlinx-coroutines:$arrow_version"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
-  testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
-  testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.4.2'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
 // Redeploy watcher.
 run {
-  if (
-    (project.hasProperty('env') && project['env'] == 'dev') ||
+    if ((project.hasProperty('env') && project['env'] == 'dev') ||
             (System.getenv('ENV') == 'dev')) {
-
-    args = ['run', mainVerticleName,
-            "--launcher-class=$mainClassName",
-            "--redeploy=src/**/*.*",
-            "--on-redeploy=./gradlew classes"
-    ]
-
+        args = ['run', mainVerticleName,
+                "--launcher-class=$launcherClassName",
+                "--redeploy=src/**/*.*",
+                "--on-redeploy=./gradlew classes"]
+    } else {
+        args = ['run', mainVerticleName,
+                "--launcher-class=$launcherClassName"]
+    }
     systemProperties = System.properties
- } else {
-   args = ['run', mainVerticleName,
-           "--launcher-class=$mainClassName"
-   ]
-    systemProperties = System.properties
- }
 }
 
 // Naming and packaging settings for the "shadow jar".
 shadowJar {
-  archiveBaseName = "letsautomate"
-  archiveClassifier = 'shadow'
+    archiveBaseName = "letsautomate"
+    archiveClassifier = 'shadow'
 
-  manifest {
-    attributes 'Main-Verticle': mainVerticleName
-  }
-  mergeServiceFiles {
-    include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
-  }
+    manifest {
+        attributes 'Main-Verticle': mainVerticleName
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
 }
 
 //task wrapper(type: Wrapper) {
@@ -133,14 +114,14 @@ shadowJar {
 
 // Heroku relies on the 'stage' task to deploy.
 task stage {
-  dependsOn shadowJar
+    dependsOn shadowJar
 }
 
 test {
-  useJUnitPlatform()
+    useJUnitPlatform()
 
-  testLogging {
-    outputs.upToDateWhen {false}
-    events "passed", "skipped", "failed", "standardOut", "standardError"
-  }
+    testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
 }
