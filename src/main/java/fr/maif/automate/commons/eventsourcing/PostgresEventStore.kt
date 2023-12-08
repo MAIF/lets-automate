@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class PostgresEventStore(private val table: String, private val offetsTable: String, private val pgClient: SQLClient) :
-    EventStore {
+        EventStore {
 
     private val events = PublishSubject.create<EventEnvelope>()
 
@@ -23,94 +23,82 @@ class PostgresEventStore(private val table: String, private val offetsTable: Str
 
     override fun loadEvents(): Observable<EventEnvelope> {
         return pgClient
-            .rxQuery("SELECT * FROM $table ORDER BY sequence_num")
-            .toObservable()
-            .flatMap {
-                Observable.fromIterable(it.rows.map { rowToEvent(it) })
-            }
+                .rxQuery("SELECT * FROM $table ORDER BY sequence_num")
+                .toObservable()
+                .flatMap {
+                    Observable.fromIterable(it.rows.map { rowToEvent(it) })
+                }
     }
 
     override fun loadEvents(sequenceNum: Long): Observable<EventEnvelope> {
         return pgClient
-            .rxQueryWithParams(
-                "SELECT * FROM $table WHERE sequence_num > ? ORDER BY sequence_num",
-                json { array(sequenceNum) }
-            )
-            .toObservable()
-            .flatMap {
-                Observable.fromIterable(it.rows.map { rowToEvent(it) })
-            }
+                .rxQueryWithParams(
+                        "SELECT * FROM $table WHERE sequence_num > ? ORDER BY sequence_num",
+                        json { array(sequenceNum) }
+                )
+                .toObservable()
+                .flatMap {
+                    Observable.fromIterable(it.rows.map { rowToEvent(it) })
+                }
     }
 
     override fun loadEventsById(id: String, sequenceNum: Long): Observable<EventEnvelope> {
         return pgClient
-            .rxQueryWithParams(
-                "SELECT * FROM $table WHERE sequence_num > ? and entity_id = ? ORDER BY sequence_num",
-                json { array(sequenceNum, id) }
-            )
-            .toObservable()
-            .flatMap {
-                Observable.fromIterable(it.rows.map { rowToEvent(it) })
-            }
+                .rxQueryWithParams(
+                        "SELECT * FROM $table WHERE sequence_num > ? and entity_id = ? ORDER BY sequence_num",
+                        json { array(sequenceNum, id) }
+                )
+                .toObservable()
+                .flatMap {
+                    Observable.fromIterable(it.rows.map { rowToEvent(it) })
+                }
     }
 
     private fun rowToEvent(event: JsonObject): EventEnvelope =
-        EventEnvelope(
-            event.getString("unique_id"),
-            event.getString("entity_id"),
-            event.getLong("sequence_num"),
-            event.getString("event_type"),
-            event.getString("version"),
-            JsonObject(event.getString("event")),
-            LocalDateTime.parse(event.getString("created_at"), DateTimeFormatter.ISO_DATE_TIME),
-            JsonObject(event.getString("metadata"))
-        )
+            EventEnvelope(
+                    event.getString("unique_id"),
+                    event.getString("entity_id"),
+                    event.getLong("sequence_num"),
+                    event.getString("event_type"),
+                    event.getString("version"),
+                    JsonObject(event.getString("event")),
+                    LocalDateTime.parse(event.getString("created_at"), DateTimeFormatter.ISO_DATE_TIME),
+                    JsonObject(event.getString("metadata"))
+            )
 
     override fun eventStream(): Observable<EventEnvelope> = events
 
     override fun eventStreamByGroupId(groupId: String): Observable<EventEnvelope> {
         return pgClient.rxQueryWithParams(
-            "SELECT sequence_num FROM $offetsTable WHERE group_id = ? ",
-            json { array(groupId) })
-            .toObservable()
-            .flatMap { r ->
-                if (r.rows.isEmpty()) {
-                    eventStream()
-                } else {
-                    val first: JsonObject = r.rows.first()
-                    val sequenceNum = first.getLong("sequence_num")
-                    loadEvents(sequenceNum).concatWith(eventStream())
+                "SELECT sequence_num FROM $offetsTable WHERE group_id = ? ",
+                json { array(groupId) })
+                .toObservable()
+                .flatMap { r ->
+                    if (r.rows.isEmpty()) {
+                        eventStream()
+                    } else {
+                        val first: JsonObject = r.rows.first()
+                        val sequenceNum = first.getLong("sequence_num")
+                        loadEvents(sequenceNum).concatWith(eventStream())
+                    }
                 }
-            }
     }
 
     override fun commit(groupId: String, sequenceNum: Long): Single<Unit> {
         return pgClient.rxGetConnection().flatMap { connection ->
             connection.rxSetAutoCommit(false)
-                .toSingleDefault(Unit).flatMap {
-                    LOGGER.debug("Searching last commit for $groupId")
-                    connection.rxQueryWithParams(
-                        "SELECT * FROM $offetsTable WHERE group_id = ?",
-                        json { array(groupId) }
-                    ).flatMap { resp ->
-                        if (resp.rows.isEmpty()) {
-                            val query = """INSERT INTO $offetsTable (group_id, sequence_num) VALUES (?, ?) """
-                            LOGGER.debug("Commit: {}, ({}, {})", query, groupId, sequenceNum)
-                            connection.rxUpdateWithParams(query, json { array(groupId, sequenceNum) })
-                        } else {
-                            val query = """UPDATE $offetsTable SET sequence_num = ? WHERE group_id = ? """
-                            LOGGER.debug("Commit: {}, ({}, {})", query, sequenceNum, groupId)
-                            connection.rxUpdateWithParams(query, json { array(sequenceNum, groupId) })
-                        }
+                    .toSingleDefault(Unit).flatMap {
+                        LOGGER.debug("Upsert last commit for $groupId to $sequenceNum")
+                        val query = """INSERT INTO $offetsTable (group_id, sequence_num) VALUES(?, ?) ON CONFLICT (group_id) DO UPDATE SET sequence_num = ?"""
+                        connection.rxUpdateWithParams(query, json { array(groupId, sequenceNum, sequenceNum) })
+                    }.flatMap { _ ->
+                        connection.rxCommit().toSingle { Unit }
+                    }.doOnError { e ->
+                        LOGGER.error("Error during commit -> rollback", e)
+                        connection.rxRollback().subscribe()
                     }
-                }.flatMap { _ ->
-                    connection.rxCommit().toSingle { Unit }
-                }.doOnError { e ->
-                    LOGGER.error("Error during commit -> rollback", e)
-                    connection.rxRollback().subscribe()
-                }
-                .flatMap { _ -> connection.rxSetAutoCommit(true).andThen(Single.just(Unit)) }
-                .doFinally { connection.rxClose().subscribe() }
+                    .flatMap { _ -> connection.rxSetAutoCommit(true).andThen(Single.just(Unit)) }
+                    .doFinally { connection.rxClose().subscribe() }
         }
     }
 
@@ -118,8 +106,8 @@ class PostgresEventStore(private val table: String, private val offetsTable: Str
 
     override fun persist(id: String, event: EventEnvelope): Single<EventEnvelope> {
         return pgClient
-            .rxUpdateWithParams(
-                """
+                .rxUpdateWithParams(
+                        """
                         INSERT INTO $table (
                             unique_id,
                             entity_id,
@@ -131,22 +119,22 @@ class PostgresEventStore(private val table: String, private val offetsTable: Str
                             metadata
                         ) VALUES (?, ?, ?, ?, ?, ?::JSON, ?, ?::JSON)
                         """,
-                json {
-                    array(
-                        event.uniqueId,
-                        event.entityId,
-                        event.sequence,
-                        event.eventType,
-                        event.version,
-                        event.event.encode(),
-                        DateTimeFormatter.ISO_DATE_TIME.format(event.date),
-                        event.metadata.encode()
-                    )
+                        json {
+                            array(
+                                    event.uniqueId,
+                                    event.entityId,
+                                    event.sequence,
+                                    event.eventType,
+                                    event.version,
+                                    event.event.encode(),
+                                    DateTimeFormatter.ISO_DATE_TIME.format(event.date),
+                                    event.metadata.encode()
+                            )
+                        }
+                )
+                .map { _ ->
+                    events.onNext(event)
+                    event
                 }
-            )
-            .map { _ ->
-                events.onNext(event)
-                event
-            }
     }
 }
