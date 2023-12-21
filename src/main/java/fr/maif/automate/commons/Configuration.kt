@@ -1,8 +1,6 @@
 package fr.maif.automate.commons
 
-import arrow.core.None
 import arrow.core.Option
-import arrow.core.toOption
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigObject
 import java.util.concurrent.TimeUnit
@@ -22,16 +20,16 @@ data class LetsAutomateConfig(
     companion object {
         fun load(config: Config): LetsAutomateConfig {
             return LetsAutomateConfig(
-                http = HttpConfig.load(config),
-                env = Env.load(config),
-                ovh = Ovh.load(config),
-                logout = config.getString("logout"),
-                certificates = CertificatesConfig.load(config),
-                letSEncrypt = LetSEncryptConfig.load(config),
-                postgresConfig = PostgresConfig.load(config),
-                clevercloud = CleverConfig.load(config),
-                teams = TeamsConfig.load(config),
-                otoroshi = OtoroshiConfig.load(config)
+                    http = HttpConfig.load(config),
+                    env = Env.load(config),
+                    ovh = Ovh.load(config),
+                    logout = config.getString("logout"),
+                    certificates = CertificatesConfig.load(config),
+                    letSEncrypt = LetSEncryptConfig.load(config),
+                    postgresConfig = PostgresConfig.load(config),
+                    clevercloud = CleverConfig.load(config),
+                    teams = TeamsConfig.load(config),
+                    otoroshi = OtoroshiConfig.load(config)
             )
         }
     }
@@ -57,7 +55,7 @@ data class CertificatesConfig(val pollingInterval: Interval) {
 }
 
 data class TeamsConfig(
-    val url: String
+        val url: String
 ) {
     companion object {
         fun load(config: Config): TeamsConfig =
@@ -75,12 +73,12 @@ data class Ovh(
 ) {
     companion object {
         fun load(config: Config): Ovh =
-            Ovh(
-                    applicationKey = config.getString("ovh.applicationKey"),
-                    applicationSecret = config.getString("ovh.applicationSecret"),
-                    consumerKey = config.getString("ovh.consumerKey"),
-                    host = config.getString("ovh.host")
-            )
+                Ovh(
+                        applicationKey = config.getString("ovh.applicationKey"),
+                        applicationSecret = config.getString("ovh.applicationSecret"),
+                        consumerKey = config.getString("ovh.consumerKey"),
+                        host = config.getString("ovh.host")
+                )
     }
 }
 
@@ -99,10 +97,10 @@ data class Interval(val period: Long, val unit: TimeUnit) {
 data class LetSEncryptConfig(val server: String, val accountId: String) {
     companion object {
         fun load(config: Config): LetSEncryptConfig =
-            LetSEncryptConfig(
-                    server = config.getString("letsencrypt.server"),
-                    accountId = config.getString("letsencrypt.accountId")
-            )
+                LetSEncryptConfig(
+                        server = config.getString("letsencrypt.server"),
+                        accountId = config.getString("letsencrypt.accountId")
+                )
     }
 }
 
@@ -136,15 +134,16 @@ data class CleverConfig(val host: String, val consumerKey: String, val consumerS
 sealed class Env {
     companion object {
         fun load(config: Config): Env =
-                when(config.getString("env")) {
+                when (config.getString("env")) {
                     "dev" -> Dev
                     "prod" -> Prod
                     else -> throw IllegalArgumentException("Env type unknown ${config.getString("env")}")
                 }
     }
 }
-object Dev: Env()
-object Prod: Env()
+
+object Dev : Env()
+object Prod : Env()
 
 
 data class OtoroshiConfig(
@@ -153,16 +152,18 @@ data class OtoroshiConfig(
         val headerGatewayState: String,
         val headerClaim: String,
         val sharedKey: String,
-        val issuer: String) {
+        val issuer: String,
+        val providerMonitoringHeader: String) {
     companion object {
         fun load(config: Config): OtoroshiConfig =
                 OtoroshiConfig(
-                    config.getString("otoroshi.headerRequestId"),
-                    config.getString("otoroshi.headerGatewayStateResp"),
-                    config.getString("otoroshi.headerGatewayState"),
-                    config.getString("otoroshi.headerClaim"),
-                    config.getString("otoroshi.sharedKey"),
-                    config.getString("otoroshi.issuer")
+                        config.getString("otoroshi.headerRequestId"),
+                        config.getString("otoroshi.headerGatewayStateResp"),
+                        config.getString("otoroshi.headerGatewayState"),
+                        config.getString("otoroshi.headerClaim"),
+                        config.getString("otoroshi.sharedKey"),
+                        config.getString("otoroshi.issuer"),
+                        config.getString("otoroshi.providerMonitoringHeader")
                 )
     }
 }

@@ -14,7 +14,6 @@ import io.vertx.reactivex.ext.web.RoutingContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
 class OtoroshiHandler(private val config: OtoroshiConfig, private val env: Env): Handler<RoutingContext> {
 
     companion object {
@@ -40,7 +39,7 @@ class OtoroshiHandler(private val config: OtoroshiConfig, private val env: Env):
                 val maybeReqId = req.getHeader(config.headerRequestId).toOption()
                 val maybeState = req.getHeader(config.headerGatewayState).toOption()
                 val maybeClaim = req.getHeader(config.headerClaim).toOption()
-                LOGGER.info("New request ${req.method()} ${req.absoluteURI()} id = $maybeReqId, state = $maybeState, claim = $maybeClaim")
+                LOGGER.debug("New request ${req.method()} ${req.absoluteURI()} id = $maybeReqId, state = $maybeState, claim = $maybeClaim")
                 maybeReqId.forall { id ->
 
                     val method = routingContext.request().method()
@@ -87,7 +86,7 @@ class OtoroshiHandler(private val config: OtoroshiConfig, private val env: Env):
                     Unit
 
                 }.fix().getOrElse {
-                    LOGGER.error("Error during otoroshi filter")
+                    if(!req.headers().contains(config.providerMonitoringHeader)) LOGGER.error("Error during otoroshi filter")
                     routingContext.response().headers().add(config.headerGatewayStateResp, maybeState.getOrElse { "--" })
                     routingContext.response()
                             .setStatusCode(401)
