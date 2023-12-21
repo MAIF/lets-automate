@@ -104,7 +104,7 @@ data class LetSEncryptConfig(val server: String, val accountId: String) {
     }
 }
 
-data class PostgresConfig(val host: String, val port: Int, val database: String, val username: Option<String>, val password: Option<String>) {
+data class PostgresConfig(val host: String, val port: Int, val database: String, val username: Option<String>, val password: Option<String>, val maxPoolSize: Int) {
     companion object {
         fun load(config: Config): PostgresConfig =
                 PostgresConfig(
@@ -112,7 +112,8 @@ data class PostgresConfig(val host: String, val port: Int, val database: String,
                         port = config.getInt("postgres.port"),
                         database = config.getString("postgres.database"),
                         username = Option(config.getString("postgres.username")),
-                        password = Option(config.getString("postgres.password"))
+                        password = Option(config.getString("postgres.password")),
+                        maxPoolSize = config.getInt("postgres.maxPoolSize")
                 )
     }
 }

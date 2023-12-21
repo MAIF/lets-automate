@@ -135,6 +135,9 @@ class MainVerticle : AbstractVerticle() {
                     Some("port" to pgConfig.port),
                     Some("database" to pgConfig.database),
                     Some("url" to url),
+                    Some("initial_pool_size" to 1),
+                    Some("min_pool_size" to 1),
+                    Some("max_pool_size" to pgConfig.maxPoolSize),
                     pgConfig.username.map { "username" to it },
                     pgConfig.password.map { "password" to it }
                 ).flatMap { it.toList() }
