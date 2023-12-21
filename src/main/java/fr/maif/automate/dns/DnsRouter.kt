@@ -22,7 +22,7 @@ class DnsRouter(dnsManager: DnsManager) {
 
     val createRecord = Handler<RoutingContext> { req ->
         val domain = req.pathParam("domain")
-        val record = Record.fromJson(req.bodyAsJson)
+        val record = Record.fromJson(req.body().asJsonObject())
         dnsManager.createRecord(domain, record)
                 .subscribe ({ result ->
                     when(result) {
@@ -41,7 +41,7 @@ class DnsRouter(dnsManager: DnsManager) {
     val updateRecord = Handler<RoutingContext> { req ->
         val domain = req.pathParam("domain")
         val recordId = req.pathParam("recordId")
-        val record = Record.fromJson(req.bodyAsJson)
+        val record = Record.fromJson(req.body().asJsonObject())
         dnsManager.updateRecord(domain, recordId.toLong(), record)
                 .subscribe ({ result ->
                     when(result) {

@@ -1,6 +1,5 @@
 package fr.maif.automate.certificate.eventhandler
 
-import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
 import arrow.core.toOption
@@ -9,13 +8,12 @@ import fr.maif.automate.certificate.write.*
 import fr.maif.automate.commons.eventsourcing.EventReader
 import fr.maif.automate.commons.eventsourcing.EventStore
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicReference
 
-class EventToCommandAdapter(private val eventStore: EventStore, val certificates: Certificates, private val eventReader: EventReader<CertificateEvent>) {
+class EventToCommandAdapter(private val eventStore: EventStore, private val certificates: Certificates, private val eventReader: EventReader<CertificateEvent>) {
     companion object {
         val LOGGER = LoggerFactory.getLogger(EventToCommandAdapter::class.java) as Logger
         const val GROUP_ID = "EventToCommandAdapter"
@@ -24,15 +22,10 @@ class EventToCommandAdapter(private val eventStore: EventStore, val certificates
 
     fun startAdapter() {
         LOGGER.info("Starting event to command adapter")
-        val disposable = adaptaterStream().subscribe({
-
-                }, { e ->
+        val disposable = adaptaterStream()
+                .retry(3)
+                .subscribe({}, { e ->
                     LOGGER.error("Error consuming command stream, going to restart", e)
-                    ref.get().toOption().forall{d ->
-                      d.dispose()
-                      true
-                    }
-                    ref.set(adaptaterStream().subscribe())
                 })
         ref.set(disposable)
     }
@@ -70,21 +63,13 @@ class EventToCommandAdapter(private val eventStore: EventStore, val certificates
                         is Some -> {
                             certificates.onCommand(mayBeCommand.t)
                                     .flatMap {
-                                        //when (r) {
-                                            LOGGER.info("Command success, commiting from group id $GROUP_ID and sequence_num $sequence")
-                                            eventStore.commit(GROUP_ID, sequence)
-//                                            is Either.Right -> {
-//
-//                                            }
-//                                            is Either.Left -> {
-//                                                LOGGER.error("Command failure, retrying ...")
-//                                                Single.error(RuntimeException("Error handling command ${r.a}"))
-//                                            }
-                                        //}
+                                        LOGGER.info("Command success, committing from group id $GROUP_ID and sequence_num $sequence")
+                                        eventStore.commit(GROUP_ID, sequence)
                                     }.toObservable()
                         }
+
                         is None -> {
-                            LOGGER.info("Empty Command, commiting from froup id $GROUP_ID and sequence_num $sequence")
+                            LOGGER.info("Empty Command, committing from group id $GROUP_ID and sequence_num $sequence")
                             eventStore.commit(GROUP_ID, sequence).toObservable()
                         }
                     }

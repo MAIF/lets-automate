@@ -85,21 +85,9 @@ class PostgresEventStore(private val table: String, private val offetsTable: Str
     }
 
     override fun commit(groupId: String, sequenceNum: Long): Single<Unit> {
-        return pgClient.rxGetConnection().flatMap { connection ->
-            connection.rxSetAutoCommit(false)
-                    .toSingleDefault(Unit).flatMap {
-                        LOGGER.debug("Upsert last commit for $groupId to $sequenceNum")
-                        val query = """INSERT INTO $offetsTable (group_id, sequence_num) VALUES(?, ?) ON CONFLICT (group_id) DO UPDATE SET sequence_num = ?"""
-                        connection.rxUpdateWithParams(query, json { array(groupId, sequenceNum, sequenceNum) })
-                    }.flatMap { _ ->
-                        connection.rxCommit().toSingle { Unit }
-                    }.doOnError { e ->
-                        LOGGER.error("Error during commit -> rollback", e)
-                        connection.rxRollback().subscribe()
-                    }
-                    .flatMap { _ -> connection.rxSetAutoCommit(true).andThen(Single.just(Unit)) }
-                    .doFinally { connection.rxClose().subscribe() }
-        }
+        LOGGER.debug("Upsert last commit for $groupId to $sequenceNum")
+        val query = """INSERT INTO $offetsTable (group_id, sequence_num) VALUES(?, ?) ON CONFLICT (group_id) DO UPDATE SET sequence_num = ?"""
+        return pgClient.rxUpdateWithParams(query, json { array(groupId, sequenceNum, sequenceNum) }).map { _ -> Unit }
     }
 
     override fun eventStream(id: String): Observable<EventEnvelope> = eventStream().filter { it.entityId == id }

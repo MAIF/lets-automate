@@ -30,7 +30,7 @@ class CertificateRouter(certificates: Certificates) {
     }
 
     val applyCommand = Handler<RoutingContext> { req ->
-        val bodyAsJson = req.bodyAsJson
+        val bodyAsJson = req.body().asJsonObject()
         LOGGER.info("Certificate command {}", bodyAsJson)
 
         val command = CertificateCommand.fromJson(bodyAsJson)
@@ -87,7 +87,7 @@ class CertificateRouter(certificates: Certificates) {
         response.headers().add("Connection", "keep-alive")
         response.statusCode = 200
         response.write("")
-        certificates.eventsView.eventsStream(lastId).subscribe({ (id, evt) ->
+        certificates.eventsView.eventsStream().subscribe({ (id, evt) ->
             context.response().write("id: $id\ndata: ${evt.encode()}\n\n")
         }, {
             //LOGGER.error("Error during sse", e)

@@ -24,7 +24,7 @@ class EventsView(private val eventStore: EventStore, private val eventReader: Ev
 
     }
 
-    fun eventsStream(id: Option<Long> = None): Observable<Pair<Long, JsonObject>> {
+    fun eventsStream(): Observable<Pair<Long, JsonObject>> {
         return eventStore
                 .eventStream()
                 .map { Triple(eventReader.read(it), it.eventType, it.sequence) }

@@ -26,6 +26,7 @@ import io.reactivex.schedulers.Schedulers
 import io.vertx.core.Handler
 import io.vertx.core.Promise
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.reactivex.core.AbstractVerticle
@@ -82,9 +83,8 @@ class MainVerticle : AbstractVerticle() {
 
         val pgConfig = letsAutomateConfig.postgresConfig
         initDb(pgConfig).subscribe({
-
-            val postgresClient =
-                SQLClient.newInstance(io.vertx.ext.jdbc.JDBCClient.create(vertx.delegate, pgConfigToJson(pgConfig)))
+            val jdbcClient = JDBCClient.createShared(vertx.delegate, pgConfigToJson(pgConfig))
+            val postgresClient = SQLClient.newInstance(jdbcClient)
 
             val client = WebClient.create(vertx)
             val dnsManager = OvhDnsManager(client, vertx.createDnsClient(), letsAutomateConfig)
