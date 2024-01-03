@@ -138,6 +138,7 @@ class MainVerticle : AbstractVerticle() {
                     Some("initial_pool_size" to 1),
                     Some("min_pool_size" to 1),
                     Some("max_pool_size" to pgConfig.maxPoolSize),
+                    Some("max_idle_time" to 30),
                     pgConfig.username.map { "username" to it },
                     pgConfig.password.map { "password" to it }
                 ).flatMap { it.toList() }
